@@ -1,10 +1,10 @@
 #include <GLFW/glfw3.h>
 
-#include <imgui.h>
-#include <imgui_internal.h>
+#include "imgui.h"
+#include "imgui_internal.h"
 
-#include "dependencies/imgui/backends/imgui_impl_glfw.h"
-#include "dependencies/imgui/backends/imgui_impl_opengl3.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 int main(int argc, char *argv[]) {
 
@@ -40,13 +40,12 @@ int main(int argc, char *argv[]) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGui::ShowDemoWindow();
-    ImGui::Render();
 
-    /* Render here */
     glClear(GL_COLOR_BUFFER_BIT);
     // glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 
     /* ImGui Render */
+    ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     /* Swap front and back buffers */
@@ -56,6 +55,11 @@ int main(int argc, char *argv[]) {
     glfwPollEvents();
   }
 
+
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
   glfwTerminate();
+
   return 0;
 }
