@@ -1,11 +1,16 @@
 cmake_minimum_required( VERSION 3.1 )
-
 project( 3d-engine )
 
+set(SOURCE main.cpp)
+
+#OPENGL 
 find_package( OpenGL REQUIRED )
 
 include_directories( ${OPENGL_INCLUDE_DIRS} )
 
+
+
+# GLFW
 set( GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only" )
 set( GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 set( GLAD_GL "" )
@@ -23,9 +28,6 @@ if( MSVC )
     SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup" )
 endif()
 
-set( GLFW-CMAKE-STARTER-SRC
-        main.cpp
-        )
 
 # ImGui
 set(imgui-directory dependencies/imgui)
@@ -38,16 +40,13 @@ set(imgui-source ${imgui-directory}/imconfig.h
 	${imgui-directory}/imstb_rectpack.h
 	${imgui-directory}/imstb_textedit.h
 	${imgui-directory}/imstb_truetype.h
-    ${imgui-directory}/imgui_tables.cpp
+  ${imgui-directory}/imgui_tables.cpp
 	${imgui-directory}/imgui_demo.cpp
 	${imgui-directory}/backends/imgui_impl_glfw.cpp
 	${imgui-directory}/backends/imgui_impl_opengl3.cpp
 )
-    
 
-
-
-add_executable( 3d-engine WIN32 ${GLFW-CMAKE-STARTER-SRC} ${GLAD_GL} )
+add_executable( 3d-engine WIN32 ${SOURCE} ${GLAD_GL} ${imgui-source})
 target_link_libraries( 3d-engine ${OPENGL_LIBRARIES} glfw )
 target_include_directories(3d-engine PRIVATE ${imgui-directory})
 

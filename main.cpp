@@ -1,5 +1,11 @@
 #include <GLFW/glfw3.h>
 
+#include <imgui.h>
+#include <imgui_internal.h>
+
+#include "dependencies/imgui/backends/imgui_impl_glfw.h"
+#include "dependencies/imgui/backends/imgui_impl_opengl3.h"
+
 int main(int argc, char *argv[]) {
 
   GLFWwindow *window;
@@ -18,10 +24,30 @@ int main(int argc, char *argv[]) {
   /* Make the window's context current */
   glfwMakeContextCurrent(window);
 
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO &io = ImGui::GetIO();
+  ImGui::StyleColorsDark();
+
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplOpenGL3_Init();
+
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
     /* Render here */
+    /* ImGui Frame */
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    ImGui::ShowDemoWindow();
+    ImGui::Render();
+
+    /* Render here */
     glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+
+    /* ImGui Render */
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
