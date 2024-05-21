@@ -10,7 +10,7 @@ set( GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only" )
 set( GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 set( GLAD_GL "" )
 
-add_subdirectory( glfw )
+add_subdirectory( dependencies/glfw )
 
 option( 3d-engine-USE-GLFW-GLAD "Use GLAD from GLFW" ON )
 
@@ -27,8 +27,31 @@ set( GLFW-CMAKE-STARTER-SRC
         main.cpp
         )
 
+# ImGui
+set(imgui-directory dependencies/imgui)
+set(imgui-source ${imgui-directory}/imconfig.h
+	${imgui-directory}/imgui.h
+	${imgui-directory}/imgui.cpp
+	${imgui-directory}/imgui_draw.cpp
+	${imgui-directory}/imgui_internal.h
+	${imgui-directory}/imgui_widgets.cpp
+	${imgui-directory}/imstb_rectpack.h
+	${imgui-directory}/imstb_textedit.h
+	${imgui-directory}/imstb_truetype.h
+    ${imgui-directory}/imgui_tables.cpp
+	${imgui-directory}/imgui_demo.cpp
+	${imgui-directory}/backends/imgui_impl_glfw.cpp
+	${imgui-directory}/backends/imgui_impl_opengl3.cpp
+)
+    
+
+
+
 add_executable( 3d-engine WIN32 ${GLFW-CMAKE-STARTER-SRC} ${GLAD_GL} )
 target_link_libraries( 3d-engine ${OPENGL_LIBRARIES} glfw )
+target_include_directories(3d-engine PRIVATE ${imgui-directory})
+
+
 if( MSVC )
     if(${CMAKE_VERSION} VERSION_LESS "3.6.0")
         message( "\n\t[ WARNING ]\n\n\tCMake version lower than 3.6.\n\n\t - Please update CMake and rerun; OR\n\t - Manually set 'GLFW-CMake-starter' as StartUp Project in Visual Studio.\n" )
