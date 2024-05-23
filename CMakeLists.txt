@@ -7,7 +7,9 @@ set(SOURCE src/main.cpp)
 find_package( OpenGL REQUIRED )
 include_directories( ${OPENGL_INCLUDE_DIRS} )
 
-
+# GLAD
+set ( GLAD_SRC dependencies/glad/src/glad.c)
+include_directories(dependencies/glad/include)
 
 # GLFW
 add_subdirectory( dependencies/glfw )
@@ -48,7 +50,12 @@ include_directories(dependencies/imgui)
 include_directories(dependencies/imgui/backends)
 
 
+# SRC
+set (SRC src)
+set (CORE_SRC ${SRC}/gui/gui.cpp)
+include_directories(src/include)
+
 # Build
-add_executable( 3d-engine WIN32 ${SOURCE} ${GLAD_GL} ${imgui-source})
+add_executable( 3d-engine WIN32 ${SOURCE} ${GLAD_SRC} ${GLAD_GL} ${imgui-source} ${CORE_SRC})
 target_link_libraries( 3d-engine ${OPENGL_LIBRARIES} glfw )
 target_include_directories(3d-engine PRIVATE ${imgui-directory})
