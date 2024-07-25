@@ -3,19 +3,19 @@
 
 class imgui
 {
-private:
-    GLFWwindow *window;
-public:
-    imgui(GLFWwindow *window);
-    ~imgui();
+    private:
+        GLFWwindow *window;
+    public:
+        imgui(GLFWwindow *window);
+        ~imgui();
 
-    void init();
-    void new_frame();
+        void init();
+        void new_frame();
 
-    void draw_frame();
+        void draw_frame();
 
-    void render();
-    void cleanup();
+        void render();
+        void cleanup();
 
 };
 
