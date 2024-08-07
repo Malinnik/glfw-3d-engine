@@ -9,8 +9,6 @@ imgui::imgui(GLFWwindow *window) { this->window = window; }
 
 imgui::~imgui() { this->cleanup(); }
 
-
-
 void imgui::init() {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -38,7 +36,6 @@ void imgui::cleanup() {
   ImGui::DestroyContext();
 }
 
-
 float red = 0.1f;
 float green = 0.0f;
 ImVec2 button_size = ImVec2(100, 100);
@@ -49,21 +46,32 @@ void imgui::draw_frame() {
 
   ImGui::Begin("Demo window");
 
-    ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
+  ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
 
-    ImGui::ColorEdit4("Test Color", &red);
-    ImGui::Text("RED: %f", red);
+  ImGui::ColorEdit4("Test Color", &red);
+  ImGui::Text("RED: %f", red);
 
-    if (ImGui::Button("Add"))
-      green += 0.1f;
-    ImGui::SliderFloat("Test Slider", &green, 0.0f, 1.0f);
-    ImGui::Text("Green: %f", green);
+  if (ImGui::Button("Add"))
+    green += 0.1f;
+  ImGui::SliderFloat("Test Slider", &green, 0.0f, 1.0f);
+  ImGui::Text("Green: %f", green);
 
-    ImGui::Text("Time: %f", ImGui::GetTime());
-    
+  ImGui::Text("Time: %f", ImGui::GetTime());
 
-    if (ImGui::Button("Exit"))
-      exit(0);
+  if (ImGui::Button("Exit"))
+    exit(0);
+
+  ImGui::End();
+}
+
+void imgui::show_debug_shaders(char *header, const GLchar *vshader) {
+  ImGui::SetWindowPos(ImVec2(0, 0));
+  ImGui::SetWindowSize(ImVec2(400, 400));
+
+  ImGui::Begin("Shader Debug");
+
+  ImGui::Text(header);
+  ImGui::Text(vshader);
 
   ImGui::End();
 }
