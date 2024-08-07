@@ -14,7 +14,7 @@ public:
   void new_frame();
 
   void draw_frame();
-  void show_debug_shaders(char *header, const GLchar *vshader);
+  void show_debug_shaders(const char *header, const char *vshader);
 
   void render();
   void cleanup();

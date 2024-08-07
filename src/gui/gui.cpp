@@ -64,7 +64,7 @@ void imgui::draw_frame() {
   ImGui::End();
 }
 
-void imgui::show_debug_shaders(char *header, const GLchar *vshader) {
+void imgui::show_debug_shaders(const char *header, const char *vshader) {
   ImGui::SetWindowPos(ImVec2(0, 0));
   ImGui::SetWindowSize(ImVec2(400, 400));
 
