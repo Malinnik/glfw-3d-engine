@@ -1,6 +1,7 @@
 cmake_minimum_required( VERSION 3.1 )
 project( 3d-engine )
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SOURCE src/main.cpp)
 
 #OPENGL 
