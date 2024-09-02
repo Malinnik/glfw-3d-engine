@@ -148,9 +148,7 @@ int main(int argc, char *argv[]) {
   while (!glfwWindowShouldClose(window)) {
     // ImGui frames
     gui.new_frame();
-    gui.draw_frame();
-    gui.show_debug_shaders("Vertex \n\n", vertexShaderSource);
-    gui.show_debug_shaders("Fragment \n\n", fragmentShaderSource);
+    gui.main_bar(vertexShaderSource, fragmentShaderSource);
 
     // Poll for and process events
     glfwPollEvents();

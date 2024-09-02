@@ -64,14 +64,72 @@ void imgui::draw_frame() {
   ImGui::End();
 }
 
-void imgui::show_debug_shaders(const char *header, const char *vshader) {
-  ImGui::SetWindowPos(ImVec2(0, 0));
-  ImGui::SetWindowSize(ImVec2(400, 400));
+void imgui::show_debug_shaders(const char *vshader, const char *fshader) {
+    ImGui::Text("Vertex:");
+    ImGui::Separator();
+    ImGui::Text(vshader);
 
-  ImGui::Begin("Shader Debug");
+    for (int i = 0; i < 10; i++)
+      ImGui::Spacing();
 
-  ImGui::Text(header);
-  ImGui::Text(vshader);
+    ImGui::Text("Fragment:");
+    ImGui::Separator();
+    ImGui::Text(fshader);
+}
 
-  ImGui::End();
+void imgui::main_bar(const char *vshader, const char *fshader) {
+  ImGui::BeginMainMenuBar();
+  if (ImGui::BeginMenu("File", true)) {
+    if (ImGui::MenuItem("Open")) {
+
+    }
+    if (ImGui::MenuItem("Save")) {
+
+    }
+    ImGui::EndMenu();
+  }
+  
+  if (ImGui::BeginMenu("Debug", true)) {
+    if (ImGui::Button("Show shader")) {
+      ImGui::OpenPopup("Debug shader");
+    }
+    if (ImGui::Button("Show Metrics")) {
+      ImGui::OpenPopup("Debug metrics");
+    }
+    if (ImGui::Button("Test File Save-Loading")) {
+      ImGui::OpenPopup("Test File Save");
+    }
+
+    ImGui::Bullet();
+    ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
+
+    if (ImGui::BeginPopup("Debug shader")){
+      show_debug_shaders(vshader, fshader);
+      ImGui::EndPopup();
+    }
+    if (ImGui::BeginPopup("Debug metrics"))
+    {
+      ImGui::ShowMetricsWindow();
+      ImGui::EndPopup();
+    }
+    if (ImGui::BeginPopup("Test File Save")){
+      // char *text = "Some text";
+      
+      // ImGui::InputTextMultiline("Text Input", text, 2*1024);
+      ImGui::EndPopup();
+    }
+
+    
+    ImGui::EndMenu();
+  }
+
+  // Move button to the right
+  ImGuiStyle& style = ImGui::GetStyle();
+  float buttonWidth1 = ImGui::CalcTextSize("Exit").x + style.FramePadding.x * 2.f;
+  float widthNeeded = buttonWidth1 + style.ItemSpacing.x;
+  ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
+  if (ImGui::Button("Exit"))
+    exit(0);
+
+  ImGui::EndMainMenuBar();
 }

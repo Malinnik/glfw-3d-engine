@@ -3,4 +3,4 @@
 
 #define FULLSCREEN true
 
-#define WIREFRAME true
+#define WIREFRAME false
