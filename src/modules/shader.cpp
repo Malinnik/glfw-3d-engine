@@ -1,7 +1,7 @@
 #include "shader.h"
 #include <iostream>
-#include <fstream>
-#include <sstream>
+// #include <fstream>
+// #include <sstream>
 
 Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource) {
     // Загрузка и компиляция шейдеров
@@ -34,6 +34,10 @@ Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmen
     // Удаляем шейдеры, так как они уже связаны с программой и больше не нужны
     glDeleteShader(vertex);
     glDeleteShader(fragment);
+}
+
+Shader::Shader() {
+    
 }
 
 Shader::~Shader() {

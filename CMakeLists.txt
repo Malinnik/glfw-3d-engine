@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 )
+cmake_minimum_required( VERSION 3.12 )
 project( 3d-engine )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -53,8 +53,14 @@ include_directories(dependencies/imgui/backends)
 
 # SRC
 set (SRC src)
-set (CORE_SRC ${SRC}/gui/gui.cpp)
 include_directories(src/include)
+set (CORE_SRC 
+	${SRC}/modules/gui.cpp
+	${SRC}/modules/shader.cpp
+	${SRC}/modules/transform.cpp
+	${SRC}/modules/triangle.cpp
+	${SRC}/modules/vec.cpp
+)
 
 # Build
 add_executable( 3d-engine WIN32 ${SOURCE} ${GLAD_SRC} ${GLAD_GL} ${imgui-source} ${CORE_SRC})
