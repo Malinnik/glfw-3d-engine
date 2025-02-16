@@ -4,6 +4,38 @@
 // #include <sstream>
 
 Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource) {
+    compileShader(vertexShaderSource, fragmentShaderSource);
+}
+
+Shader::Shader() {
+    const GLchar *vertexShaderSource =
+      "#version 330 core\n"
+      "layout (location = 0) in vec3 position;\n"
+      "void main()\n"
+      "{\n"
+          "gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
+      "}\0";
+    const GLchar *fragmentShaderSource = 
+      "#version 330 core\n"
+      "out vec4 color;\n"
+      "void main()\n"
+      "{\n"
+          "color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+      "}\n\0";
+
+    compileShader(vertexShaderSource, fragmentShaderSource);
+}
+
+Shader::~Shader() {
+    glDeleteProgram(ID);
+}
+
+void Shader::use() {
+    glUseProgram(ID);
+}
+
+void Shader::compileShader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
+{
     // Загрузка и компиляция шейдеров
     const char* vShaderCode = vertexShaderSource.c_str();
     const char* fShaderCode = fragmentShaderSource.c_str();
@@ -34,18 +66,6 @@ Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmen
     // Удаляем шейдеры, так как они уже связаны с программой и больше не нужны
     glDeleteShader(vertex);
     glDeleteShader(fragment);
-}
-
-Shader::Shader() {
-    
-}
-
-Shader::~Shader() {
-    glDeleteProgram(ID);
-}
-
-void Shader::use() {
-    glUseProgram(ID);
 }
 
 void Shader::checkCompileErrors(GLuint shader, std::string type) {
