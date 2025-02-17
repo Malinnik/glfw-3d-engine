@@ -52,14 +52,15 @@ include_directories(dependencies/imgui/backends)
 
 
 # SRC
-set (SRC src)
+set (SRC src/modules)
 include_directories(src/include)
-set (CORE_SRC 
-	${SRC}/modules/gui.cpp
-	${SRC}/modules/shader.cpp
-	${SRC}/modules/transform.cpp
-	${SRC}/modules/triangle.cpp
-	${SRC}/modules/vec.cpp
+set (CORE_SRC
+	${SRC}/app.cpp 
+	${SRC}/gui.cpp
+	${SRC}/shader.cpp
+	${SRC}/transform.cpp
+	${SRC}/triangle.cpp
+	${SRC}/vec.cpp
 )
 
 # Build
