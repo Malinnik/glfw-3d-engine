@@ -1,15 +1,17 @@
 #include <glad/glad.h>
 
-#include <GLFW/glfw3.h>
+// #include <GLFW/glfw3.h>
 
 #include "config.h"
 #include "gui.h"
 #include "triangle.h"
 #include "window.h"
 #include "file.h"
+#include "events.h"
 
 int main(int argc, char *argv[]) {
   Window window;
+  Events events(window.getWindow());
 
   imgui gui(window.getWindow());
   gui.init();
@@ -17,7 +19,7 @@ int main(int argc, char *argv[]) {
   Triangle triangle; 
 
   while (!window.isShouldClose()) {
-    glfwPollEvents();
+    events.pullEvents();
     window.render();
     
     triangle.draw();

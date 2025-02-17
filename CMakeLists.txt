@@ -61,6 +61,7 @@ set (CORE_SRC
 	${SRC}/transform.cpp
 	${SRC}/triangle.cpp
 	${SRC}/vec.cpp
+	${SRC}/events.cpp
 )
 
 # Build
