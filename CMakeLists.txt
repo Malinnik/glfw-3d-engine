@@ -55,7 +55,7 @@ include_directories(dependencies/imgui/backends)
 set (SRC src/modules)
 include_directories(src/include)
 set (CORE_SRC
-	${SRC}/app.cpp 
+	${SRC}/window.cpp 
 	${SRC}/gui.cpp
 	${SRC}/shader.cpp
 	${SRC}/transform.cpp

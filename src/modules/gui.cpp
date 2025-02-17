@@ -38,6 +38,13 @@ void imgui::cleanup() {
   ImGui::DestroyContext();
 }
 
+void imgui::loop()
+{
+  new_frame();
+  main_bar();
+  render();
+}
+
 float red = 0.1f;
 float green = 0.0f;
 ImVec2 button_size = ImVec2(100, 100);
@@ -79,7 +86,7 @@ void imgui::show_debug_shaders(const char *vshader, const char *fshader) {
   ImGui::Text("%s", fshader);
 }
 
-void imgui::main_bar(const char *vshader, const char *fshader) {
+void imgui::main_bar() {
   ImGui::BeginMainMenuBar();
   if (ImGui::BeginMenu("File", true)) {
     if (ImGui::MenuItem("Open")) {
@@ -103,10 +110,10 @@ void imgui::main_bar(const char *vshader, const char *fshader) {
     ImGui::Bullet();
     ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
 
-    if (ImGui::BeginPopup("Debug shader")) {
-      show_debug_shaders(vshader, fshader);
-      ImGui::EndPopup();
-    }
+    // if (ImGui::BeginPopup("Debug shader")) {
+    //   // show_debug_shaders(vshader, fshader);
+    //   ImGui::EndPopup();
+    // }
     if (ImGui::BeginPopup("Debug metrics")) {
       ImGui::ShowMetricsWindow();
       ImGui::EndPopup();

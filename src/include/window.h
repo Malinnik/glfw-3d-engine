@@ -1,12 +1,16 @@
 #pragma once
-#include "GLFW/glfw3.h"
+// #include "GLFW/glfw3.h"
 
+class GLFWwindow;
 
-class App{
+class Window{
     public:
-        App();
-        ~App();
+        Window();
+        ~Window();
         GLFWwindow* getWindow();
+        bool isShouldClose();
+        void swapBuffers();
+        void render();
 
     private:
         GLFWwindow *_window;

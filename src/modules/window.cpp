@@ -1,11 +1,11 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "app.h"
+#include "window.h"
 #include "../config.h"
 #include <cstdlib>
 #include <iostream>
 
-App::App() {
+Window::Window() {
     if (!glfwInit())
         exit(-1);
 
@@ -29,15 +29,31 @@ App::App() {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-App::~App() {
+Window::~Window() {
     glfwTerminate();
 }
 
-GLFWwindow* App::getWindow() {
+GLFWwindow* Window::getWindow() {
     return _window;
 }
 
-void App::framebuffer_size_callback(GLFWwindow *window, int width, int height) 
+bool Window::isShouldClose()
+{
+    return glfwWindowShouldClose(_window);
+}
+
+void Window::swapBuffers()
+{
+    glfwSwapBuffers(_window);
+}
+
+void Window::render()
+{
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Window::framebuffer_size_callback(GLFWwindow *window, int width, int height) 
 {
     glViewport(0, 0, width, height);
 }

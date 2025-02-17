@@ -15,8 +15,10 @@ public:
   void draw_frame();
   void show_debug_shaders(const char *vshader, const char *fshader);
 
-  void main_bar(const char *vshader, const char *fshader);
+  void main_bar();
 
   void render();
   void cleanup();
+
+  void loop();
 };

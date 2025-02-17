@@ -5,34 +5,25 @@
 #include "config.h"
 #include "gui.h"
 #include "triangle.h"
-#include "app.h"
+#include "window.h"
+#include "file.h"
 
 int main(int argc, char *argv[]) {
-  App app;
+  Window window;
 
-  imgui gui(app.getWindow());
+  imgui gui(window.getWindow());
   gui.init();
 
-  Triangle triangle;
+  Triangle triangle; 
 
-  while (!glfwWindowShouldClose(app.getWindow())) {
-    // ImGui frames
-    gui.new_frame();
-    gui.main_bar("", "");
-
-    // Poll for and process events
+  while (!window.isShouldClose()) {
     glfwPollEvents();
-
-    // GLFW render
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    triangle.draw();
+    window.render();
     
-    // ImGui render
-    gui.render();
-    // Swap front and back buffers
-    glfwSwapBuffers(app.getWindow());
+    triangle.draw();
+    gui.loop();
+
+    window.swapBuffers();
   }
   
   return 0;
