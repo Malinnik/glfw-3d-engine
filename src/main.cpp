@@ -12,10 +12,7 @@
 int main(int argc, char *argv[]) {
   Window window;
   Events events(window.getWindow());
-
   imgui gui(window.getWindow());
-  gui.init();
-
   Triangle triangle; 
 
   while (!window.isShouldClose()) {

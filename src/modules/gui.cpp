@@ -7,7 +7,7 @@
 #include <imgui.h>
 #include <iterator>
 
-imgui::imgui(GLFWwindow *window) { this->window = window; }
+imgui::imgui(GLFWwindow *window) { this->window = window; init();}
 
 imgui::~imgui() { this->cleanup(); }
 
