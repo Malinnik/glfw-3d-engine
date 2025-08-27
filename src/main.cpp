@@ -8,12 +8,16 @@
 #include "window.h"
 #include "file.h"
 #include "events.h"
+#include <iostream>
 
 int main(int argc, char *argv[]) {
   Window window;
   Events events(window.getWindow());
   imgui gui(window.getWindow());
-  Triangle triangle; 
+  Triangle triangle;
+  triangle.shader = Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
+
+  std::cout << "Startig program" << std::endl;
 
   while (!window.isShouldClose()) {
     events.pullEvents();

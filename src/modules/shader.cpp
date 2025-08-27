@@ -1,11 +1,11 @@
 #include "shader.h"
 #include <iostream>
-// #include <fstream>
-// #include <sstream>
+#include <fstream>
+#include <sstream>
 
-Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource) {
-    compileShader(vertexShaderSource, fragmentShaderSource);
-}
+// Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource) {
+//     compileShader(vertexShaderSource, fragmentShaderSource);
+// }
 
 Shader::Shader() {
     const GLchar *vertexShaderSource =
@@ -22,6 +22,45 @@ Shader::Shader() {
       "{\n"
           "color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
       "}\n\0";
+
+    compileShader(vertexShaderSource, fragmentShaderSource);
+}
+
+Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
+{
+    // Чтение вертексного шейдера
+    std::string vertexCode;
+    std::ifstream vShaderFile;
+    vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try {
+        vShaderFile.open(vertexPath);
+        std::stringstream vShaderStream;
+        vShaderStream << vShaderFile.rdbuf();
+        vShaderFile.close();
+        vertexCode = vShaderStream.str();
+    } catch (std::ifstream::failure& e) {
+        std::cerr << "Ошибка чтения вершинного шейдера: " << e.what() << std::endl;
+    }
+    
+    // Чтение фрагментного шейдера
+    std::string fragmentCode;
+    std::ifstream fShaderFile;
+    fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try {
+        fShaderFile.open(fragmentPath);
+        std::stringstream fShaderStream;
+        fShaderStream << fShaderFile.rdbuf();
+        fShaderFile.close();
+        fragmentCode = fShaderStream.str();
+    } catch (std::ifstream::failure& e) {
+        std::cerr << "Ошибка чтения фрагментного шейдера: " << e.what() << std::endl;
+    }
+    
+    const GLchar* vertexShaderSource = vertexCode.c_str();
+    const GLchar* fragmentShaderSource = fragmentCode.c_str();
+
+    std::cout << vertexShaderSource << std::endl;
+    std::cout << fragmentShaderSource << std::endl;
 
     compileShader(vertexShaderSource, fragmentShaderSource);
 }
