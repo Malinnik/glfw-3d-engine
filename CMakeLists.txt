@@ -64,7 +64,15 @@ set (CORE_SRC
 	${SRC}/events.cpp
 )
 
+file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+
 # Build
 add_executable( 3d-engine WIN32 ${SOURCE} ${GLAD_SRC} ${GLAD_GL} ${imgui-source} ${CORE_SRC})
 target_link_libraries( 3d-engine ${OPENGL_LIBRARIES} glfw )
 target_include_directories(3d-engine PRIVATE ${imgui-directory})
+
+add_custom_command(TARGET 3d-engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/assets
+    $<TARGET_FILE_DIR:3d-engine>/assets
+)
