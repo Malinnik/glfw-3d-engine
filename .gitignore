@@ -52,3 +52,7 @@ _deps
 *release/
 *sdl/
 
+### ImGui ###
+# .ini file
+imgui.ini
+
