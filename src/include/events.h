@@ -1,7 +1,8 @@
 #pragma once
+#include <GLFW/glfw3.h>
 
 typedef unsigned int uint;
-class GLFWwindow;
+// class GLFWwindow;
 
 class Events {
     public:
