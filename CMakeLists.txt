@@ -62,6 +62,7 @@ set (CORE_SRC
 	${SRC}/triangle.cpp
 	${SRC}/vec.cpp
 	${SRC}/events.cpp
+	${SRC}/file.cpp
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})

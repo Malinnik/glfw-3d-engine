@@ -1,26 +1,52 @@
 #include "file.h"
+#include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream>
 
-File::File(const char *path) : _file(path){}
+FileReader::FileReader(const char *path) : _path(path){}
 
-File::~File()
+FileReader::~FileReader()
 {
-    _file.close();
+    if (_file.is_open()){
+        _file.close();
+    }
 }
 
-std::string File::getText()
+std::string FileReader::getText()
 {
-    // TODO: read file from stream
-    std::string text;
-    while (!_file.eof())
-        text += _file.get();
-    return text;
-}
-
-std::string File::getText(const char *path)
-{
-    std::ifstream file(path);
-    // TODO: read file from stream
-    file.close();
     return std::string();
+}
+
+std::string FileReader::getBinary(const char *path)
+{
+    std::ifstream fin(path, std::ios::binary);
+    if (!fin) throw std::runtime_error("Failed to open file");
+    
+    fin.seekg(0, std::ios::end);
+    std::streamsize size = fin.tellg();
+    if (size <= 0) return ""; // Пустой файл или ошибка
+    
+    fin.seekg(0, std::ios::beg);
+    std::string data(size, '\0');
+    if (!fin.read(&data[0], size)) throw std::runtime_error("Read error");
+    return data;
+}
+
+std::string FileReader::getText(const std::string &path)
+{
+    std::string fileText;
+    std::ifstream file;
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try {
+        file.open(path);
+        std::stringstream fileStream;
+        fileStream << file.rdbuf();
+        file.close();
+        fileText = fileStream.str();
+    } catch (std::ifstream::failure& e) {
+        std::cerr << "Ошибка чтения файла: " << e.what() << std::endl;
+    }
+
+    return fileText;
 }

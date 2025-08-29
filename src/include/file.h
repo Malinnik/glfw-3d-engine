@@ -1,21 +1,18 @@
 #pragma once
 #include <string>
 #include <fstream>
-class File 
+class FileReader 
 {
     public:
-        File(const char *path);
-        ~File();
+        FileReader(const char *path);
+        ~FileReader();
 
-        
-        void overwriteFile(const char *text);
-        void appendFile();
         std::string getText();
-        static std::string getText(const char *path);
-        void saveToMemory();
-
+        static std::string getBinary(const char *path);
+        static std::string getText(const std::string& path);
 
     private:
+        std::string _path;
         std::string _text;
         std::ifstream _file;
 
