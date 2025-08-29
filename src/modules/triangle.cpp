@@ -5,9 +5,13 @@
 //     setupMesh();
 // }
 
-Triangle::Triangle(const std::string& vertexPath, const std::string& fragmentPath): transform(), shader(vertexPath, fragmentPath)
+Triangle::Triangle(): transform(), shader()
 {
-    this->shader = shader;
+    setupMesh();
+}
+
+Triangle::Triangle(const std::string &vertexPath, const std::string &fragmentPath) : transform(), shader(vertexPath, fragmentPath)
+{
     setupMesh();
 }
 

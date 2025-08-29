@@ -8,7 +8,7 @@
 
 class Triangle {
 public:
-    // Triangle();
+    Triangle();
     Triangle(const std::string& vertexPath, const std::string& fragmentPath);
     ~Triangle();
     void draw();
