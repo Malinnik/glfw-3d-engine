@@ -8,8 +8,8 @@ class FileReader
         ~FileReader();
 
         std::string getText();
-        static std::string getBinary(const char *path);
-        static std::string getText(const std::string& path);
+        static std::string readBinary(const char *path);
+        static std::string readText(const std::string& path);
 
     private:
         std::string _path;

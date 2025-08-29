@@ -18,7 +18,7 @@ std::string FileReader::getText()
     return std::string();
 }
 
-std::string FileReader::getBinary(const char *path)
+std::string FileReader::readBinary(const char *path)
 {
     std::ifstream fin(path, std::ios::binary);
     if (!fin) throw std::runtime_error("Failed to open file");
@@ -33,7 +33,7 @@ std::string FileReader::getBinary(const char *path)
     return data;
 }
 
-std::string FileReader::getText(const std::string &path)
+std::string FileReader::readText(const std::string &path)
 {
     std::string fileText;
     std::ifstream file;
