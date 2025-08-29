@@ -11,11 +11,16 @@
 #include <iostream>
 
 int main(int argc, char *argv[]) {
+  if (LOGGING)
+  {
+    freopen("logs/output.log", "w", stdout);
+    freopen("logs/error.log", "w", stderr);
+  }
   Window window;
   Events events(window.getWindow());
   imgui gui(window.getWindow());
-  Triangle triangle;
-  triangle.shader = Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
+  Triangle triangle = Triangle("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
+  // triangle.shader = Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
 
   std::cout << "Startig program" << std::endl;
 

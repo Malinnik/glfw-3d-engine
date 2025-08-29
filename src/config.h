@@ -4,3 +4,6 @@
 #define FULLSCREEN false
 
 #define WIREFRAME false
+
+
+#define LOGGING true

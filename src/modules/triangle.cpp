@@ -1,7 +1,13 @@
 #include "triangle.h"
 
-Triangle::Triangle(): shader(), transform()
+// Triangle::Triangle(): shader(), transform()
+// {
+//     setupMesh();
+// }
+
+Triangle::Triangle(const std::string& vertexPath, const std::string& fragmentPath): transform(), shader(vertexPath, fragmentPath)
 {
+    this->shader = shader;
     setupMesh();
 }
 

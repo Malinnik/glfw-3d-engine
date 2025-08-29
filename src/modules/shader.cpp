@@ -7,27 +7,28 @@
 //     compileShader(vertexShaderSource, fragmentShaderSource);
 // }
 
-Shader::Shader() {
-    const GLchar *vertexShaderSource =
-      "#version 330 core\n"
-      "layout (location = 0) in vec3 position;\n"
-      "void main()\n"
-      "{\n"
-          "gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
-      "}\0";
-    const GLchar *fragmentShaderSource = 
-      "#version 330 core\n"
-      "out vec4 color;\n"
-      "void main()\n"
-      "{\n"
-          "color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-      "}\n\0";
+// Shader::Shader() {
+//     const GLchar *vertexShaderSource =
+//       "#version 330 core\n"
+//       "layout (location = 0) in vec3 position;\n"
+//       "void main()\n"
+//       "{\n"
+//           "gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
+//       "}\0";
+//     const GLchar *fragmentShaderSource = 
+//       "#version 330 core\n"
+//       "out vec4 color;\n"
+//       "void main()\n"
+//       "{\n"
+//           "color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+//       "}\n\0";
 
-    compileShader(vertexShaderSource, fragmentShaderSource);
-}
+//     compileShader(vertexShaderSource, fragmentShaderSource);
+// }
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
+    std::cout << "\n\n\n" << "--------------------------- READING SHADERS -------------------------------" << "\n\n\n";
     // Чтение вертексного шейдера
     std::string vertexCode;
     std::ifstream vShaderFile;
@@ -59,8 +60,8 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
     const GLchar* vertexShaderSource = vertexCode.c_str();
     const GLchar* fragmentShaderSource = fragmentCode.c_str();
 
-    std::cout << vertexShaderSource << std::endl;
-    std::cout << fragmentShaderSource << std::endl;
+    std::cout << "\n ------ VERTEX SHADER ------\n" << vertexShaderSource << "\n\n";
+    std::cout << "\n ------ FRAGMENT SHADER ------\n"<< fragmentShaderSource << "\n\n";
 
     compileShader(vertexShaderSource, fragmentShaderSource);
 }
@@ -75,6 +76,9 @@ void Shader::use() {
 
 void Shader::compileShader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
 {
+    std::cout << "\n\n\n" << "--------------------------- COMPILING SHADERS -------------------------------" << "\n\n\n";
+    std::cout << "\n ------ VERTEX SHADER ------\n" << vertexShaderSource << "\n\n";
+    std::cout << "\n ------ FRAGMENT SHADER ------\n"<< fragmentShaderSource << "\n\n";
     // Загрузка и компиляция шейдеров
     const char* vShaderCode = vertexShaderSource.c_str();
     const char* fShaderCode = fragmentShaderSource.c_str();
