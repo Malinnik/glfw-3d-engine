@@ -1,4 +1,5 @@
 #include "shader.h"
+#include "file.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -28,42 +29,10 @@
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
-    std::cout << "\n\n\n" << "--------------------------- READING SHADERS -------------------------------" << "\n\n\n";
-    // Чтение вертексного шейдера
-    std::string vertexCode;
-    std::ifstream vShaderFile;
-    vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try {
-        vShaderFile.open(vertexPath);
-        std::stringstream vShaderStream;
-        vShaderStream << vShaderFile.rdbuf();
-        vShaderFile.close();
-        vertexCode = vShaderStream.str();
-    } catch (std::ifstream::failure& e) {
-        std::cerr << "Ошибка чтения вершинного шейдера: " << e.what() << std::endl;
-    }
-    
-    // Чтение фрагментного шейдера
-    std::string fragmentCode;
-    std::ifstream fShaderFile;
-    fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try {
-        fShaderFile.open(fragmentPath);
-        std::stringstream fShaderStream;
-        fShaderStream << fShaderFile.rdbuf();
-        fShaderFile.close();
-        fragmentCode = fShaderStream.str();
-    } catch (std::ifstream::failure& e) {
-        std::cerr << "Ошибка чтения фрагментного шейдера: " << e.what() << std::endl;
-    }
-    
-    const GLchar* vertexShaderSource = vertexCode.c_str();
-    const GLchar* fragmentShaderSource = fragmentCode.c_str();
+    std::string vertexCode = FileReader::getText(vertexPath);
+    std::string fragmentCode = FileReader::getText(fragmentPath);
 
-    std::cout << "\n ------ VERTEX SHADER ------\n" << vertexShaderSource << "\n\n";
-    std::cout << "\n ------ FRAGMENT SHADER ------\n"<< fragmentShaderSource << "\n\n";
-
-    compileShader(vertexShaderSource, fragmentShaderSource);
+    compileShader(vertexCode.c_str(), fragmentCode.c_str());
 }
 
 Shader::~Shader() {
