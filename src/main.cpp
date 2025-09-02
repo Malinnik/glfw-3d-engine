@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
   loguru::init(argc, argv);
   loguru::add_file("logs/debug.log", loguru::Append, loguru::Verbosity_MAX);
   loguru::add_file("logs/info.log", loguru::Truncate, loguru::Verbosity_INFO);
+  loguru::add_file("logs/error.log", loguru::Truncate, loguru::Verbosity_ERROR);
 
   LOG_F(INFO, "Starting program");
 

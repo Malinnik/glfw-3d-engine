@@ -25,6 +25,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(loguru CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
 # Создание исполняемого файла
 add_executable(3d-engine ${SOURCE} ${CORE_SRC})
@@ -36,6 +37,7 @@ target_link_libraries(3d-engine PRIVATE
     glm::glm
     imgui::imgui
     loguru::loguru
+    fmt::fmt
     ${OPENGL_LIBRARIES}
 )
 

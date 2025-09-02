@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <loguru.hpp>
+#include <fmt/format.h>
 
 // Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource) {
 //     compileShader(vertexShaderSource, fragmentShaderSource);
@@ -45,9 +47,9 @@ void Shader::use() {
 
 void Shader::compileShader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
 {
-    std::cout << "\n\n\n" << "--------------------------- COMPILING SHADERS -------------------------------" << "\n\n\n";
-    std::cout << "\n ------ VERTEX SHADER ------\n" << vertexShaderSource << "\n\n";
-    std::cout << "\n ------ FRAGMENT SHADER ------\n"<< fragmentShaderSource << "\n\n";
+    LOG_F(INFO, "--------------------------- COMPILING SHADERS -------------------------------");
+    LOG_F(INFO, fmt::format("\n ------ VERTEX SHADER ------\n {} \n\n", vertexShaderSource).c_str());
+    LOG_F(INFO, fmt::format("\n ------ FRAGMENT SHADER ------\n {} \n\n", fragmentShaderSource).c_str());
     // Загрузка и компиляция шейдеров
     const char* vShaderCode = vertexShaderSource.c_str();
     const char* fShaderCode = fragmentShaderSource.c_str();
@@ -87,13 +89,13 @@ void Shader::checkCompileErrors(GLuint shader, std::string type) {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            LOG_F(ERROR, fmt::format("ERROR::SHADER_COMPILATION_ERROR of type:  {} \n {} \n -- --------------------------------------------------- -- \n", type, infoLog).c_str());
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            std::cerr << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            LOG_F(ERROR, fmt::format("ERROR::PROGRAM_LINKING_ERROR of type:  {} \n {} \n -- --------------------------------------------------- -- \n", type, infoLog).c_str());
         }
     }
 }
