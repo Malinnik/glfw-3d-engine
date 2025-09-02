@@ -56,3 +56,7 @@ _deps
 # .ini file
 imgui.ini
 
+### Docs ###
+/docs/Doxygen/gen_docs/*
+/docs/Sphinx/build/*
+/docs/Sphinx/source/api/*

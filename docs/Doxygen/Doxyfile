@@ -1,0 +1,12 @@
+GENERATE_HTML           = NO
+GENERATE_XML            = YES
+XML_PROGRAMLISTING = NO
+
+# Project Stuff
+PROJECT_NAME           = "3D-Engine"
+PROJECT_BRIEF          = "Dev docs"
+OUTPUT_DIRECTORY       = "./gen_docs"
+
+# Inputs
+INPUT                  = "../../src/"
+RECURSIVE              = YES
