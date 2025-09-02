@@ -60,3 +60,6 @@ imgui.ini
 /docs/Doxygen/gen_docs/*
 /docs/Sphinx/build/*
 /docs/Sphinx/source/api/*
+
+### Logs ###
+*logs/

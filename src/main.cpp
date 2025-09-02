@@ -9,20 +9,22 @@
 #include "file.h"
 #include "events.h"
 #include <iostream>
+#include <loguru.hpp>
 
 int main(int argc, char *argv[]) {
-  if (LOGGING)
-  {
-    freopen("logs/output.log", "w", stdout);
-    freopen("logs/error.log", "w", stderr);
-  }
+
+  loguru::init(argc, argv);
+  loguru::add_file("logs/debug.log", loguru::Append, loguru::Verbosity_MAX);
+  loguru::add_file("logs/info.log", loguru::Truncate, loguru::Verbosity_INFO);
+
+  LOG_F(INFO, "Starting program");
+
   Window window;
   Events events(window.getWindow());
   imgui gui(window.getWindow());
   Triangle triangle = Triangle("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
   // triangle.shader = Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
 
-  std::cout << "Startig program" << std::endl;
 
   while (!window.isShouldClose()) {
     events.pullEvents();
