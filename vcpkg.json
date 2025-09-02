@@ -1,0 +1,14 @@
+{
+  "name": "3d-engine",
+  "version": "0.1.0",
+  "description": "learn vkpg & glfw & imgui & cmake",
+  "dependencies": [
+    "glad",
+    "glfw3",
+    "glm",
+    {
+      "name": "imgui",
+      "features": ["glfw-binding", "opengl3-binding"]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 .PHONY: build
 
 build:
-	cmake -B ./build -S .
+	cmake -B ./build -S . -D CMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}scripts/buildsystems/vcpkg.cmake"
 
 run:
 	cmake -B ./build -S .

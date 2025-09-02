@@ -1,15 +1,15 @@
 #pragma once
-#include "vec.h"
+#include "glm/vec3.hpp"
 
 class Transform {
     private:
-        Vec3 _position;
+        glm::vec3 _position;
 
     public:
         Transform(float x, float y, float z);
         Transform();
 
         void setPosition(float x, float y, float z);
-        void setPosition(Vec3* position);
-        Vec3* getPosition();
+        void setPosition(glm::vec3* position);
+        glm::vec3* getPosition();
 };
