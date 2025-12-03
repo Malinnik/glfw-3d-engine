@@ -16,12 +16,12 @@ bool Events::cursor_started = false;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    if (action = GLFW_PRESS)
+    if (action == GLFW_PRESS)
     {
         Events::keys[key] = true;
         Events::frames[key] = Events::current;
     }
-    else if (action = GLFW_RELEASE)
+    else if (action == GLFW_RELEASE)
     {
         Events::keys[key] = false;
         Events::frames[key] = Events::current;
@@ -47,7 +47,7 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
     if (Events::cursor_locked)
     {
         Events::deltaX += xpos-Events::x;
-        Events::deltaY += xpos-Events::y;
+        Events::deltaY += ypos-Events::y;
     }
     else
     {

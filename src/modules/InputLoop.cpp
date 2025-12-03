@@ -14,25 +14,31 @@ void InputLoop::updateTime(){
 void InputLoop::inputLoop(){
     updateTime();
 
-
-    if (Events::jPressed(GLFW_KEY_TAB))
-    {
+    if (Events::jPressed(GLFW_KEY_TAB)){
         LOG_F(INFO, "Key TAB just pressed");
         Events::toggleCursor();
     }
 
-    if (Events::jPressed(GLFW_KEY_W))
+    if (Events::pressed(GLFW_KEY_W)){
+        LOG_F(INFO, "Key W pressed");
         camera->position += camera->front * delta * camera->speed;
-    if (Events::jPressed(GLFW_KEY_S))
+    }
+    if (Events::pressed(GLFW_KEY_S)){
+        LOG_F(INFO, "Key S pressed");
         camera->position -= camera->front * delta * camera->speed;
-    if (Events::jPressed(GLFW_KEY_D))
+    }
+    if (Events::pressed(GLFW_KEY_D)){
+        LOG_F(INFO, "Key D pressed");
         camera->position += camera->right * delta * camera->speed;
-    if (Events::jPressed(GLFW_KEY_A))
+    }
+    if (Events::pressed(GLFW_KEY_A)){
+        LOG_F(INFO, "Key A pressed");
         camera->position -= camera->right * delta * camera->speed;
+    }
 
     if (Events::cursor_locked){
-        camera->camX += -Events::deltaX / HEIGHT * 2;
         camera->camY += -Events::deltaY / HEIGHT * 2;
+        camera->camX += -Events::deltaX / HEIGHT * 2;
 
         if (camera->camY < -radians(89.0f))
             camera->camY = -radians(89.0f);

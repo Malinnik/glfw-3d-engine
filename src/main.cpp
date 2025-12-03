@@ -30,20 +30,22 @@ int main(int argc, char *argv[]) {
 
   Shader *shader = new Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
   Triangle triangle = Triangle(shader);
-  Camera* camera = new Camera(vec3(0,0,1), radians(90.0f));
+  Camera* camera = new Camera(vec3(0,0,1), radians(70.0f));
 
   InputLoop inputLoop = InputLoop(camera);
 
   while (!window.isShouldClose()) {
     inputLoop.inputLoop();
-    events.pullEvents();
     window.render();
     
     triangle.draw(camera);
     gui.loop();
-
+    
     window.swapBuffers();
+    events.pullEvents();
   }
   
+  delete shader;
+  delete camera;
   return 0;
 }
