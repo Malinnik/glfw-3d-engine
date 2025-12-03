@@ -11,6 +11,7 @@
 #include <iostream>
 #include <loguru.hpp>
 #include "camera.h"
+#include "InputLoop.h"
 
 int main(int argc, char *argv[]) {
 
@@ -25,10 +26,12 @@ int main(int argc, char *argv[]) {
   Events events(window.getWindow());
   imgui gui(window.getWindow());
   Triangle triangle = Triangle("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
-  // triangle.shader = Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
   Camera* camera = new Camera(vec3(0,0,1), radians(90.f));
 
+  InputLoop inputLoop = InputLoop(camera);
+
   while (!window.isShouldClose()) {
+    inputLoop.inputLoop();
     events.pullEvents();
     window.render();
     
