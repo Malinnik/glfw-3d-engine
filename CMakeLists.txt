@@ -18,6 +18,7 @@ set(CORE_SRC
     ${SRC}/events.cpp
     ${SRC}/file.cpp
     ${SRC}/camera.cpp
+    ${SRC}/InputLoop.cpp
 )
 
 # Поиск пакетов

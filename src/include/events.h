@@ -1,5 +1,6 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include <window.h>
 
 typedef unsigned int uint;
 // class GLFWwindow;
@@ -19,4 +20,12 @@ class Events {
         void pullEvents();
         Events(GLFWwindow *window);
         // ~Events();
+
+        static bool pressed(int keyCode);
+        static bool jPressed(int keyCode);
+
+        static bool clicked(int button);
+        static bool jClicked(int button);
+
+        static void toggleCursor();
 };

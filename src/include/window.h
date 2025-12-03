@@ -7,12 +7,13 @@ class Window{
     public:
         Window();
         ~Window();
-        GLFWwindow* getWindow();
         bool isShouldClose();
         void swapBuffers();
         void render();
+        
+        static void setCursorMode(int mode);
+        static GLFWwindow *window;
 
     private:
-        GLFWwindow *_window;
         void static framebuffer_size_callback(GLFWwindow *window, int width, int height);
 };

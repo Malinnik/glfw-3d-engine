@@ -78,3 +78,35 @@ Events::Events(GLFWwindow *window)
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
 }
+
+bool Events::pressed(int keyCode)
+{
+    if (keyCode < 0 || keyCode >= MOUSE_BUTTONS)
+        return false;
+    return keys[keyCode];
+}
+
+bool Events::jPressed(int keyCode)
+{
+    if (keyCode < 0 || keyCode >= MOUSE_BUTTONS)
+        return false;
+    return keys[keyCode] && frames[keyCode] == current;
+}
+
+bool Events::clicked(int button)
+{
+    int index = MOUSE_BUTTONS+button;
+    return keys[index];
+}
+
+bool Events::jClicked(int button)
+{
+    int index = MOUSE_BUTTONS+button;
+    return keys[index] && frames[index] == current;
+}
+
+void Events::toggleCursor()
+{
+    cursor_locked = !cursor_locked;
+    Window::setCursorMode(cursor_locked ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}

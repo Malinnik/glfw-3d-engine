@@ -22,9 +22,9 @@ int main(int argc, char *argv[]) {
 
   LOG_F(INFO, "Starting program");
 
-  Window window;
-  Events events(window.getWindow());
-  imgui gui(window.getWindow());
+  Window window = Window();
+  Events events(Window::window);
+  imgui gui(Window::window);
   Triangle triangle = Triangle("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
   Camera* camera = new Camera(vec3(0,0,1), radians(90.f));
 
