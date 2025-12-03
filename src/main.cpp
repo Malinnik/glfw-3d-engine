@@ -13,6 +13,8 @@
 #include <iostream>
 #include <loguru.hpp>
 #include "camera.h"
+#include "loaders/image/png_loader.h"
+#include "texture.h"
 #include "InputLoop.h"
 
 int main(int argc, char *argv[]) {
@@ -28,12 +30,16 @@ int main(int argc, char *argv[]) {
   Events events(Window::window);
   imgui gui(Window::window);
 
-  Shader *shader = new Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
+  // Shader *shader = new Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
+  Shader *shader = new Shader("./assets/shaders/texture_vertex.vert", "./assets/shaders/texture_fragment.frag");
+  Texture* texture = load_texture("./assets/images/dirt.png");
   Triangle triangle = Triangle(shader);
+  
   Camera* camera = new Camera(vec3(0,0,1), radians(70.0f));
-
   InputLoop inputLoop = InputLoop(camera);
-
+  
+  texture->bind();
+  
   while (!window.isShouldClose()) {
     inputLoop.inputLoop();
     window.render();
