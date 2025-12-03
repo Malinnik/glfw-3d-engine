@@ -17,6 +17,7 @@ set(CORE_SRC
     ${SRC}/triangle.cpp
     ${SRC}/events.cpp
     ${SRC}/file.cpp
+    ${SRC}/camera.cpp
 )
 
 # Поиск пакетов

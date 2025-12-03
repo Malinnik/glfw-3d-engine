@@ -10,6 +10,7 @@
 #include "events.h"
 #include <iostream>
 #include <loguru.hpp>
+#include "camera.h"
 
 int main(int argc, char *argv[]) {
 
@@ -25,7 +26,7 @@ int main(int argc, char *argv[]) {
   imgui gui(window.getWindow());
   Triangle triangle = Triangle("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
   // triangle.shader = Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
-
+  Camera* camera = new Camera(vec3(0,0,1), radians(90.f));
 
   while (!window.isShouldClose()) {
     events.pullEvents();
