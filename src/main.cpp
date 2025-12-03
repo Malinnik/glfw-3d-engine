@@ -34,11 +34,10 @@ int main(int argc, char *argv[]) {
   Shader *shader = new Shader("./assets/shaders/texture_vertex.vert", "./assets/shaders/texture_fragment.frag");
   Texture* texture = load_texture("./assets/images/dirt.png");
   Triangle triangle = Triangle(shader);
+  texture->bind();
   
   Camera* camera = new Camera(vec3(0,0,1), radians(70.0f));
   InputLoop inputLoop = InputLoop(camera);
-  
-  texture->bind();
   
   while (!window.isShouldClose()) {
     inputLoop.inputLoop();
