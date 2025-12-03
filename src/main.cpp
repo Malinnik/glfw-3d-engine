@@ -1,4 +1,6 @@
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 // #include <GLFW/glfw3.h>
 
@@ -25,21 +27,22 @@ int main(int argc, char *argv[]) {
   Window window = Window();
   Events events(Window::window);
   imgui gui(Window::window);
-  Triangle triangle = Triangle("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
-  Camera* camera = new Camera(vec3(0,0,1), radians(90.f));
+
+  Shader *shader = new Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
+  Triangle triangle = Triangle(shader);
+  Camera* camera = new Camera(vec3(0,0,1), radians(90.0f));
 
   InputLoop inputLoop = InputLoop(camera);
 
   while (!window.isShouldClose()) {
+    inputLoop.inputLoop();
+    events.pullEvents();
     window.render();
     
-    triangle.draw();
+    triangle.draw(camera);
     gui.loop();
-    
-    inputLoop.inputLoop();
-    
+
     window.swapBuffers();
-    events.pullEvents();
   }
   
   return 0;

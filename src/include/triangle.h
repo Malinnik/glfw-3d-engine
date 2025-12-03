@@ -4,17 +4,20 @@
 #include <GLFW/glfw3.h>
 #include "shader.h"
 #include "transform.h"
+#include "camera.h"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 
 class Triangle {
 public:
     Triangle();
-    Triangle(const std::string& vertexPath, const std::string& fragmentPath);
+    Triangle(Shader* shader);
     ~Triangle();
-    void draw();
+    void draw(Camera* camera);
 
     Transform transform;
-    Shader shader;
+    Shader *shader;
 
 private:
     GLuint VAO, VBO, EBO;

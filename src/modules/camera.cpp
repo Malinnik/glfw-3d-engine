@@ -18,8 +18,8 @@ void Camera::updateVectors(){
 
 void Camera::rotate(float x, float y, float z){
     rotation = glm::rotate(rotation, z, vec3(0,0,1));
-    rotation = glm::rotate(rotation, z, vec3(0,1,0));
-    rotation = glm::rotate(rotation, z, vec3(1,0,0));
+    rotation = glm::rotate(rotation, y, vec3(0,1,0));
+    rotation = glm::rotate(rotation, x, vec3(1,0,0));
 
     updateVectors();
 }

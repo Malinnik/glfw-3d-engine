@@ -1,5 +1,6 @@
 #include "InputLoop.h"
 #include "../config.h"
+#include <loguru.hpp>
 
 InputLoop::InputLoop(Camera* camera) : camera(camera){}
 
@@ -13,18 +14,20 @@ void InputLoop::updateTime(){
 void InputLoop::inputLoop(){
     updateTime();
 
-    // if (Events::jPressed(GLFW_KEY_ESCAPE))
 
     if (Events::jPressed(GLFW_KEY_TAB))
+    {
+        LOG_F(INFO, "Key TAB just pressed");
         Events::toggleCursor();
+    }
 
-    if (Events::pressed(GLFW_KEY_W))
+    if (Events::jPressed(GLFW_KEY_W))
         camera->position += camera->front * delta * camera->speed;
-    if (Events::pressed(GLFW_KEY_S))
+    if (Events::jPressed(GLFW_KEY_S))
         camera->position -= camera->front * delta * camera->speed;
-    if (Events::pressed(GLFW_KEY_D))
+    if (Events::jPressed(GLFW_KEY_D))
         camera->position += camera->right * delta * camera->speed;
-    if (Events::pressed(GLFW_KEY_A))
+    if (Events::jPressed(GLFW_KEY_A))
         camera->position -= camera->right * delta * camera->speed;
 
     if (Events::cursor_locked){

@@ -2,8 +2,6 @@
 #include <GLFW/glfw3.h>
 #include <string.h>
 
-#define MOUSE_BUTTONS 1024
-
 bool* Events::keys;
 uint* Events::frames;
 uint Events::current = 0;
@@ -14,6 +12,7 @@ float Events::y = 0.0f;
 bool Events::cursor_locked = false;
 bool Events::cursor_started = false;
 
+#define MOUSE_BUTTONS 1024
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -71,8 +70,8 @@ Events::Events(GLFWwindow *window)
     keys = new bool[1032];
     frames = new uint[1032];
 
-    memset(keys, false, 1032);
-    memset(frames, 0, 1032);
+    memset(keys, false, 1032*sizeof(bool));
+    memset(frames, 0, 1032*sizeof(uint));
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);

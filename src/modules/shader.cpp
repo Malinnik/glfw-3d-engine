@@ -5,6 +5,7 @@
 #include <sstream>
 #include <loguru.hpp>
 #include <fmt/format.h>
+#include <glm/ext.hpp>
 
 // Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource) {
 //     compileShader(vertexShaderSource, fragmentShaderSource);
@@ -43,6 +44,12 @@ Shader::~Shader() {
 
 void Shader::use() {
     glUseProgram(ID);
+}
+
+void Shader::uniformMatrix(std::string name, glm::mat4 matrix)
+{
+    GLuint transformLoc = glGetUniformLocation(ID, name.c_str());
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 void Shader::compileShader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)

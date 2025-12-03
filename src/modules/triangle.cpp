@@ -10,7 +10,7 @@ Triangle::Triangle(): transform(), shader()
     setupMesh();
 }
 
-Triangle::Triangle(const std::string &vertexPath, const std::string &fragmentPath) : transform(), shader(vertexPath, fragmentPath)
+Triangle::Triangle(Shader *shader): transform(), shader(shader)
 {
     setupMesh();
 }
@@ -50,8 +50,12 @@ void Triangle::setupMesh() {
     glBindVertexArray(0);
 }
 
-void Triangle::draw() {
-    shader.use();
+void Triangle::draw(Camera* camera) {
+    glm::mat4 model(1.0f);
+    // model = glm::translate(model, glm::vec3(0.5f, 0, 0));
+    shader->uniformMatrix("model", model);
+    shader->uniformMatrix("projview", camera->getProjection()*camera->getView());
+    shader->use();
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
