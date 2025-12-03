@@ -16,6 +16,9 @@ class Camera {
         float fov;
         mat4 rotation;
 
+        float camX = 0.0f;
+        float camY = 0.0f;
+
         float speed = 5.0f;
         
         Camera(vec3 position, float fov);

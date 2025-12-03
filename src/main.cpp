@@ -31,14 +31,15 @@ int main(int argc, char *argv[]) {
   InputLoop inputLoop = InputLoop(camera);
 
   while (!window.isShouldClose()) {
-    inputLoop.inputLoop();
-    events.pullEvents();
     window.render();
     
     triangle.draw();
     gui.loop();
-
+    
+    inputLoop.inputLoop();
+    
     window.swapBuffers();
+    events.pullEvents();
   }
   
   return 0;
