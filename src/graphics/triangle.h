@@ -2,11 +2,12 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "shader.h"
-#include "engine/transform.h"
-#include "window/camera.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+
+#include "engine/transform.h"
+#include "graphics/shader.h"
+#include "window/camera.h"
 
 
 class Triangle {

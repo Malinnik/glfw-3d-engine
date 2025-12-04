@@ -1,8 +1,9 @@
-#include "window/camera.h"
+#include <glm/ext.hpp>
+
 #include "window/window.h"
+#include "camera.h"
 #include "config.h"
 
-#include <glm/ext.hpp>
 
 
 Camera::Camera(vec3 position, float fov): position(position), fov(fov), rotation(1.0f){

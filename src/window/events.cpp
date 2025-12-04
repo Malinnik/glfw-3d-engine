@@ -1,6 +1,7 @@
-#include "window/events.h"
 #include <GLFW/glfw3.h>
 #include <string.h>
+
+#include "events.h"
 
 bool* Events::keys;
 uint* Events::frames;

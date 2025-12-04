@@ -1,21 +1,21 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <iostream>
+#include <loguru.hpp>
 
 // #include <GLFW/glfw3.h>
 
-#include "config.h"
-#include "ui/gui.h"
-#include "graphics/triangle.h"
-#include "window/window.h"
-#include "files/file.h"
-#include "window/events.h"
-#include <iostream>
-#include <loguru.hpp>
-#include "window/camera.h"
 #include "loaders/image/png_loader.h"
+#include "graphics/triangle.h"
 #include "graphics/texture.h"
 #include "engine/InputLoop.h"
+#include "window/window.h"
+#include "window/events.h"
+#include "window/camera.h"
+#include "files/file.h"
+#include "config.h"
+#include "ui/gui.h"
 
 int main(int argc, char *argv[]) {
 

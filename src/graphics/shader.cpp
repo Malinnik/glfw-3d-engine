@@ -1,11 +1,13 @@
-#include "graphics/shader.h"
-#include "files/file.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
 #include <loguru.hpp>
-#include <fmt/format.h>
 #include <glm/ext.hpp>
+#include <fmt/format.h>
+
+#include "files/file.h"
+#include "shader.h"
 
 // Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource) {
 //     compileShader(vertexShaderSource, fragmentShaderSource);

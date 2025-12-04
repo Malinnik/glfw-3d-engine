@@ -1,5 +1,7 @@
 #pragma once
+
 #include <GLFW/glfw3.h>
+
 #include "window/camera.h"
 #include "window/events.h"
 

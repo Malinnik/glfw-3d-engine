@@ -1,8 +1,9 @@
-#include "files/file.h"
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
+
+#include "file.h"
 
 FileReader::FileReader(const char *path) : _path(path){}
 

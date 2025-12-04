@@ -2,9 +2,8 @@
 
 Transform::Transform() : _position(){}
 
-Transform::Transform(float x, float y, float z) 
-    : _position(x, y ,z)
-    {}
+Transform::Transform(float x, float y, float z) : _position(x, y ,z)
+{}
 
 void Transform::setPosition(float x, float y, float z)
 {
