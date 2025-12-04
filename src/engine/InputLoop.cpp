@@ -1,5 +1,5 @@
-#include "InputLoop.h"
-#include "../config.h"
+#include "engine/InputLoop.h"
+#include "config.h"
 #include <loguru.hpp>
 
 InputLoop::InputLoop(Camera* camera) : camera(camera){}

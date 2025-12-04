@@ -18,5 +18,5 @@ run:
 run-win:
 	make build
 	cmake --build ./build
-	./build/debug/3d-engine.exe
+	./build/src/Debug/3d-engine.exe
 

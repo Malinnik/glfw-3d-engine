@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <loguru.hpp>
 #include <fmt/format.h>
-#include "texture.h"
+#include "graphics/texture.h"
 #include "png.h"
 
 int _png_load(const char* file, int* width, int* height)

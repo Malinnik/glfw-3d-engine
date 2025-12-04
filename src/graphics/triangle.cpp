@@ -1,4 +1,4 @@
-#include "triangle.h"
+#include "graphics/triangle.h"
 
 // Triangle::Triangle(): shader(), transform()
 // {

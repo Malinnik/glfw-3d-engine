@@ -5,17 +5,17 @@
 // #include <GLFW/glfw3.h>
 
 #include "config.h"
-#include "gui.h"
-#include "triangle.h"
-#include "window.h"
-#include "file.h"
-#include "events.h"
+#include "ui/gui.h"
+#include "graphics/triangle.h"
+#include "window/window.h"
+#include "files/file.h"
+#include "window/events.h"
 #include <iostream>
 #include <loguru.hpp>
-#include "camera.h"
+#include "window/camera.h"
 #include "loaders/image/png_loader.h"
-#include "texture.h"
-#include "InputLoop.h"
+#include "graphics/texture.h"
+#include "engine/InputLoop.h"
 
 int main(int argc, char *argv[]) {
 

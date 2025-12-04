@@ -1,6 +1,6 @@
-#include "camera.h"
-#include "window.h"
-#include "../config.h"
+#include "window/camera.h"
+#include "window/window.h"
+#include "config.h"
 
 #include <glm/ext.hpp>
 

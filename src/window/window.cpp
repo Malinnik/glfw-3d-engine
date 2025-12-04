@@ -1,7 +1,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "window.h"
-#include "../config.h"
+#include "window/window.h"
+#include "config.h"
 #include <cstdlib>
 #include <iostream>
 
