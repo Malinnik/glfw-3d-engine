@@ -1,5 +1,7 @@
 #include "BlockRenderer.h"
 #include "blocks/block.h"
+#include <loguru.hpp>
+#include <fmt/format.h>
 
 // vert coords and texture coords
 #define VERTEX_SIZE (3+2+1)
@@ -37,16 +39,17 @@ Mesh *BlockRenderer::render(Chunk *chunk)
 			for (int x = 0; x < CHUNK_W; x++){
 				block blk = chunk->blocks[(y * CHUNK_D + z) * CHUNK_W + x];
 				unsigned int id = blk.id;
-
+                LOG_F(INFO, fmt::format("ID: {}", id).c_str());    
 				if (!id){
 					continue;
 				}
 				float l;
 				float uvsize = 1.0f/16.0f;
-				float u = ((id-1) % 16) * uvsize;
-				float v = 1-((1 + (id-1) / 16) * uvsize);
-
-				if (!IS_BLOCKED(x,y+1,z)){
+				float u = (id % 16) * uvsize;
+				float v = 1-((1 + id / 16) * uvsize);
+                LOG_F(INFO, fmt::format("ID: {}  u: {}  v: {}", id, u ,v).c_str());
+				
+                if (!IS_BLOCKED(x,y+1,z)){
 					l = 1.0f;
 					VERTEX(index, x - 0.5f, y + 0.5f, z - 0.5f, u+uvsize,v, l);
 					VERTEX(index, x - 0.5f, y + 0.5f, z + 0.5f, u+uvsize,v+uvsize, l);

@@ -33,16 +33,22 @@ int main(int argc, char *argv[]) {
   imgui gui(Window::window);
 
   // Shader *shader = new Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
-  Shader *shader = new Shader("./assets/shaders/texture_vertex.vert", "./assets/shaders/texture_fragment.frag");
+  // Shader *shader = new Shader("./assets/shaders/texture_vertex.vert", "./assets/shaders/texture_fragment.frag");
+  Shader *shader = new Shader("./assets/shaders/texture_light.vert", "./assets/shaders/texture_fragment.frag");
   Texture* texture = load_texture("./assets/images/TextureAtlas.png");
   Quad quad = Quad(shader);
-  texture->bind();
 
   BlockRenderer blockRenderer(1024*1024*8);
   Chunk* chunk = new Chunk();
   Mesh* mesh = blockRenderer.render(chunk);
   
-  Camera* camera = new Camera(vec3(0,0,1), radians(70.0f));
+  glClearColor(0.6f,0.62f,0.65f,1);
+  glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  
+  Camera* camera = new Camera(vec3(0,0,20), radians(70.0f));
   InputLoop inputLoop = InputLoop(camera);
   
   glm::mat4 model(1.0f);
@@ -55,6 +61,7 @@ int main(int argc, char *argv[]) {
     shader->use();
     shader->uniformMatrix("model", model);
 		shader->uniformMatrix("projview", camera->getProjection()*camera->getView());
+    texture->bind();
     mesh->draw(GL_TRIANGLES);
     gui.loop();
     
@@ -64,5 +71,8 @@ int main(int argc, char *argv[]) {
   
   delete shader;
   delete camera;
+  delete mesh;
+  delete chunk;
+
   return 0;
 }
