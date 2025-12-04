@@ -52,7 +52,6 @@ int main(int argc, char *argv[]) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   
-  
   InputLoop inputLoop = InputLoop(camera, chunks);
   
   while (!window.isShouldClose()) {
