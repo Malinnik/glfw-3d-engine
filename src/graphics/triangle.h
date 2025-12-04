@@ -7,7 +7,7 @@
 
 #include "engine/transform.h"
 #include "graphics/shader.h"
-#include "window/camera.h"
+#include "engine/camera.h"
 
 
 class Triangle {

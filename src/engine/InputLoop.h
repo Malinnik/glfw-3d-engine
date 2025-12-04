@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "window/camera.h"
+#include "engine/camera.h"
 #include "window/events.h"
 
 

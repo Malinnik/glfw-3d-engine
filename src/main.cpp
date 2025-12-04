@@ -12,7 +12,7 @@
 #include "engine/InputLoop.h"
 #include "window/window.h"
 #include "window/events.h"
-#include "window/camera.h"
+#include "engine/camera.h"
 #include "files/file.h"
 #include "config.h"
 #include "ui/gui.h"

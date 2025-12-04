@@ -1,15 +1,12 @@
 #include <glm/ext.hpp>
 
-#include "window/window.h"
 #include "camera.h"
 #include "config.h"
-
 
 
 Camera::Camera(vec3 position, float fov): position(position), fov(fov), rotation(1.0f){
     updateVectors();
 };
-
 
 void Camera::updateVectors(){
     front = vec3(rotation * vec4(0,0,-1,1));
@@ -24,7 +21,6 @@ void Camera::rotate(float x, float y, float z){
 
     updateVectors();
 }
-
 
 mat4 Camera::getProjection(){
     float aspect = (float)WIDTH / (float)HEIGHT;
