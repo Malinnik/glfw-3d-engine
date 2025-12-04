@@ -11,7 +11,9 @@
 
 class Chunk{
     public:
+        int x, y, z;
         block* blocks;
-        Chunk();
+        bool modified = true;
+        Chunk(int x, int y, int z);
         ~Chunk();
 };

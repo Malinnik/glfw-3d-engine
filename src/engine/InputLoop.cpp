@@ -2,8 +2,9 @@
 
 #include "config.h"
 #include "InputLoop.h"
+#include "blocks/block.h"
 
-InputLoop::InputLoop(Camera* camera) : camera(camera){}
+InputLoop::InputLoop(Camera* camera, Chunks* chunks) : camera(camera), chunks(chunks) {}
 
 void InputLoop::updateTime(){
     float currentTime = glfwGetTime();
@@ -51,5 +52,24 @@ void InputLoop::inputLoop(){
 
         camera->rotation = mat4(1.0f);
         camera->rotate(camera->camY, camera->camX, 0);
+    }
+
+
+    {
+        vec3 end;
+        vec3 norm;
+        vec3 iend;
+        
+        if (Events::jClicked(GLFW_MOUSE_BUTTON_1)){
+            block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
+            if (blk != nullptr)
+                chunks->set((int)iend.x, (int)iend.y, (int)iend.z, 0);
+        }
+        if (Events::jClicked(GLFW_MOUSE_BUTTON_2)){
+            block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
+            if (blk != nullptr)
+                chunks->set((int)(iend.x)+(int)(norm.x), (int)(iend.y)+(int)(norm.y), (int)(iend.z)+(int)(norm.z), 2);
+        }
+        
     }
 }

@@ -1,14 +1,17 @@
 #include "BlockRenderer.h"
 #include "blocks/block.h"
-#include <loguru.hpp>
-#include <fmt/format.h>
 
 // vert coords and texture coords
 #define VERTEX_SIZE (3+2+1)
 
-#define IS_IN_CHUNK(x,y,z) ((x) >= 0 && (x) < CHUNK_W && (y) >= 0 && (y) < CHUNK_H && (z) >= 0 && (z) < CHUNK_D)
-#define BLOCK(x,y,z) (chunk->blocks[((y) * CHUNK_D + (z)) * CHUNK_W + (x)])
-#define IS_BLOCKED(x,y,z) ((IS_IN_CHUNK(x, y, z)) && BLOCK(x, y, z).id)
+#define CDIV(X,A) (((X) < 0) ? ((X) / (A) - 1) : ((X) / (A)))
+#define LOCAL_NEG(X, SIZE) (((X) < 0) ? ((SIZE)+(X)) : (X))
+#define LOCAL(X, SIZE) ((X) >= (SIZE) ? ((X) - (SIZE)) : LOCAL_NEG(X, SIZE))
+#define IS_CHUNK(X,Y,Z) (GET_CHUNK(X,Y,Z) != nullptr)
+#define GET_CHUNK(X,Y,Z) (chunks[((CDIV(Y, CHUNK_H)+1) * 3 + CDIV(Z, CHUNK_D) + 1) * 3 + CDIV(X, CHUNK_W) + 1])
+
+#define BLOCK(X,Y,Z) (GET_CHUNK(X,Y,Z)->blocks[(LOCAL(Y, CHUNK_H) * CHUNK_D + LOCAL(Z, CHUNK_D)) * CHUNK_W + LOCAL(X, CHUNK_W)])
+#define IS_BLOCKED(X,Y,Z) ((!IS_CHUNK(X, Y, Z)) || BLOCK(X, Y, Z).id)
 
 #define VERTEX(index, x,y,z, u,v, l) buffer[index+0] = (x);\
                                      buffer[index+1] = (y);\
@@ -31,7 +34,7 @@ BlockRenderer::~BlockRenderer()
     delete[] buffer;
 }
 
-Mesh *BlockRenderer::render(Chunk *chunk)
+Mesh *BlockRenderer::render(Chunk *chunk, const Chunk** chunks)
 {
     size_t index = 0;
 	for (int y = 0; y < CHUNK_H; y++){
@@ -39,7 +42,6 @@ Mesh *BlockRenderer::render(Chunk *chunk)
 			for (int x = 0; x < CHUNK_W; x++){
 				block blk = chunk->blocks[(y * CHUNK_D + z) * CHUNK_W + x];
 				unsigned int id = blk.id;
-                LOG_F(INFO, fmt::format("ID: {}", id).c_str());    
 				if (!id){
 					continue;
 				}
@@ -47,7 +49,6 @@ Mesh *BlockRenderer::render(Chunk *chunk)
 				float uvsize = 1.0f/16.0f;
 				float u = (id % 16) * uvsize;
 				float v = 1-((1 + id / 16) * uvsize);
-                LOG_F(INFO, fmt::format("ID: {}  u: {}  v: {}", id, u ,v).c_str());
 				
                 if (!IS_BLOCKED(x,y+1,z)){
 					l = 1.0f;
