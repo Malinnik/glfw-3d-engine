@@ -1,10 +1,5 @@
 #include "triangle.h"
 
-// Triangle::Triangle(): shader(), transform()
-// {
-//     setupMesh();
-// }
-
 Triangle::Triangle(): transform(), shader()
 {
     setupMesh();

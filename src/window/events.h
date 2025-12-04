@@ -1,6 +1,7 @@
 #pragma once
 #include <GLFW/glfw3.h>
-#include <window.h>
+
+#include <window/window.h>
 
 typedef unsigned int uint;
 // class GLFWwindow;

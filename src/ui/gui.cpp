@@ -1,11 +1,12 @@
-#include "gui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 #include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <imgui.h>
 #include <iterator>
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
+#include "gui.h"
 
 imgui::imgui(GLFWwindow *window) { this->window = window; init();}
 

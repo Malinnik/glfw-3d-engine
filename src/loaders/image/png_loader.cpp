@@ -1,9 +1,10 @@
-#include "png_loader.h"
 #include <glad/glad.h>
 #include <loguru.hpp>
 #include <fmt/format.h>
-#include "texture.h"
 #include "png.h"
+
+#include "graphics/texture.h"
+#include "png_loader.h"
 
 int _png_load(const char* file, int* width, int* height)
 {
