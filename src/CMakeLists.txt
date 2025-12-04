@@ -9,6 +9,8 @@ file(GLOB_RECURSE CORE_SRC
     "loaders/*.cpp"
     "ui/*.cpp"
     "window/*.cpp"
+    "block/*.cpp"
+    "world/*.cpp"
 )
 
 # Создание исполняемого файла

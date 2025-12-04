@@ -10,6 +10,7 @@
 #include "graphics/triangle.h"
 #include "graphics/quad.h"
 #include "graphics/texture.h"
+#include "graphics/BlockRenderer.h"
 #include "engine/InputLoop.h"
 #include "window/window.h"
 #include "window/events.h"
@@ -33,18 +34,28 @@ int main(int argc, char *argv[]) {
 
   // Shader *shader = new Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
   Shader *shader = new Shader("./assets/shaders/texture_vertex.vert", "./assets/shaders/texture_fragment.frag");
-  Texture* texture = load_texture("./assets/images/dirt.png");
+  Texture* texture = load_texture("./assets/images/TextureAtlas.png");
   Quad quad = Quad(shader);
   texture->bind();
+
+  BlockRenderer blockRenderer(1024*1024*8);
+  Chunk* chunk = new Chunk();
+  Mesh* mesh = blockRenderer.render(chunk);
   
   Camera* camera = new Camera(vec3(0,0,1), radians(70.0f));
   InputLoop inputLoop = InputLoop(camera);
   
+  glm::mat4 model(1.0f);
+
   while (!window.isShouldClose()) {
     inputLoop.inputLoop();
     window.render();
     
-    quad.draw(camera);
+    // quad.draw(camera);
+    shader->use();
+    shader->uniformMatrix("model", model);
+		shader->uniformMatrix("projview", camera->getProjection()*camera->getView());
+    mesh->draw(GL_TRIANGLES);
     gui.loop();
     
     window.swapBuffers();
