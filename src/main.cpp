@@ -8,6 +8,7 @@
 
 #include "loaders/image/png_loader.h"
 #include "graphics/triangle.h"
+#include "graphics/quad.h"
 #include "graphics/texture.h"
 #include "engine/InputLoop.h"
 #include "window/window.h"
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
   // Shader *shader = new Shader("./assets/shaders/vertex.vert", "./assets/shaders/fragment.frag");
   Shader *shader = new Shader("./assets/shaders/texture_vertex.vert", "./assets/shaders/texture_fragment.frag");
   Texture* texture = load_texture("./assets/images/dirt.png");
-  Triangle triangle = Triangle(shader);
+  Quad quad = Quad(shader);
   texture->bind();
   
   Camera* camera = new Camera(vec3(0,0,1), radians(70.0f));
@@ -43,7 +44,7 @@ int main(int argc, char *argv[]) {
     inputLoop.inputLoop();
     window.render();
     
-    triangle.draw(camera);
+    quad.draw(camera);
     gui.loop();
     
     window.swapBuffers();

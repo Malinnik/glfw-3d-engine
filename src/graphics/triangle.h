@@ -6,8 +6,10 @@
 #include <glm/ext.hpp>
 
 #include "engine/transform.h"
-#include "graphics/shader.h"
 #include "engine/camera.h"
+#include "graphics/shader.h"
+#include "graphics/mesh.h"
+
 
 
 class Triangle {
@@ -21,6 +23,6 @@ public:
     Shader *shader;
 
 private:
-    GLuint VAO, VBO, EBO;
+    Mesh* mesh;
     void setupMesh();
 };
