@@ -36,6 +36,16 @@ void InputLoop::inputLoop(){
         camera->position -= camera->right * delta * camera->speed;
     }
 
+    if (Events::pressed(GLFW_KEY_SPACE)){
+        LOG_F(INFO, "Key SPACE pressed");
+        camera->position += camera->up * delta * camera->speed;
+    }
+
+    if (Events::pressed(GLFW_KEY_LEFT_SHIFT)){
+        LOG_F(INFO, "Key LEFT SHIFT pressed");
+        camera->position -= camera->up * delta * camera->speed;
+    }
+
     if (Events::cursor_locked){
         camera->camY += -Events::deltaY / HEIGHT * 2;
         camera->camX += -Events::deltaX / HEIGHT * 2;

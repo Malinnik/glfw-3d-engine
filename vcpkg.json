@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "learn vkpg & glfw & imgui & cmake",
   "dependencies": [
+    "fmt",
     "glad",
     "glfw3",
     "glm",
@@ -14,6 +15,6 @@
       ]
     },
     "loguru",
-    "fmt"
+    "libpng"
   ]
 }

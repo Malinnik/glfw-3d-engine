@@ -19,6 +19,8 @@ set(CORE_SRC
     ${SRC}/file.cpp
     ${SRC}/camera.cpp
     ${SRC}/InputLoop.cpp
+    ${SRC}/texture.cpp
+    src/loaders/image/png_loader.cpp
 )
 
 # Поиск пакетов
@@ -28,6 +30,7 @@ find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(loguru CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(PNG REQUIRED)
 
 # Создание исполняемого файла
 add_executable(3d-engine ${SOURCE} ${CORE_SRC})
@@ -40,6 +43,7 @@ target_link_libraries(3d-engine PRIVATE
     imgui::imgui
     loguru::loguru
     fmt::fmt
+    PNG::PNG
     ${OPENGL_LIBRARIES}
 )
 
