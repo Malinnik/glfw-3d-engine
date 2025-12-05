@@ -1,4 +1,3 @@
-#include <GLFW/glfw3.h>
 #include <string.h>
 
 #include "events.h"
