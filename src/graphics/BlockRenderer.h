@@ -10,5 +10,5 @@ class BlockRenderer {
         BlockRenderer(size_t capacity);
         ~BlockRenderer();
 
-        Mesh* render(Chunk* chunk, const Chunk** chunks);
+        Mesh* render(Chunk* chunk, const Chunk** chunks, bool ambientOcclusion = true);
 };
