@@ -41,6 +41,17 @@ void InputLoop::inputLoop(){
         camera->position -= camera->up * delta * camera->speed;
     }
 
+    if (Events::scroll_up){
+        // LOG_F(INFO, "Camera speed UP");
+        if (camera->speed >= 0)
+        camera->speed += 1;
+    }
+    if (Events::scroll_down){
+        // LOG_F(INFO, "Camera speed DOWN");
+        if (camera->speed > 1) 
+        camera->speed -= 1;
+    }
+
     if (Events::cursor_locked){
         camera->camY += -Events::deltaY / HEIGHT * 2;
         camera->camX += -Events::deltaX / HEIGHT * 2;
