@@ -16,4 +16,7 @@ class Chunk{
         bool modified = true;
         Chunk(int x, int y, int z);
         ~Chunk();
+
+        static inline float generate(int x, int y, int z);
+
 };
