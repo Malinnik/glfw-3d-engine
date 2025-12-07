@@ -103,7 +103,6 @@ void InputLoop::inputLoop(){
         block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
         if (blk != nullptr)
         {
-            LOG_F(INFO, fmt::format("Found block at: {} {} {}",iend.x, iend.y, iend.z).c_str());
             blockSelector->draw(iend.x, iend.y, iend.z);
 
             if (Events::jClicked(GLFW_MOUSE_BUTTON_1)){
