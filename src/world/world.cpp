@@ -7,10 +7,10 @@ World::World()
 {
     shader = new Shader("./assets/shaders/block.vert", "./assets/shaders/block.frag");
     texture = load_texture("./assets/images/TextureAtlas.png");
-    camera = new Camera(vec3(0,0,20), radians(70.0f));
+    camera = new Camera(vec3(20,15,20), radians(70.0f));
     crosshair = new Crosshair();
     
-    chunks = new Chunks(32,4,32);
+    chunks = new Chunks(8,4,8);
     meshes = new Mesh*[chunks->volume];
     for (size_t i = 0; i < chunks->volume; i++)
         meshes[i] = nullptr;
