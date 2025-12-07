@@ -1,8 +1,11 @@
 #include <loguru.hpp>
+#include "fmt/format.h"
 
 #include "config.h"
 #include "InputLoop.h"
 #include "blocks/block.h"
+#include "world/chunk.h"
+#include "files/file.h"
 
 InputLoop::InputLoop(Camera* camera, Chunks* chunks) : camera(camera), chunks(chunks) {}
 
@@ -39,6 +42,24 @@ void InputLoop::inputLoop(){
 
     if (Events::pressed(GLFW_KEY_LEFT_SHIFT)){
         camera->position -= camera->up * delta * camera->speed;
+    }
+
+    if (Events::jPressed(GLFW_KEY_F1))
+    {
+        unsigned char* buffer = new unsigned char[chunks->volume * CHUNK_BLOCKS];
+        chunks->write(buffer);
+        FileReader::writeBinary("world.bin", (const char*) buffer, chunks->volume * CHUNK_BLOCKS);
+        delete[] buffer;
+        LOG_F(INFO, fmt::format("WORLD SAVED IN {} WITH {} BYTES", "world.bin", chunks->volume*CHUNK_BLOCKS).c_str());
+    }
+
+    if (Events::jPressed(GLFW_KEY_F2))
+    {
+        unsigned char* buffer = new unsigned char[chunks->volume * CHUNK_BLOCKS];
+        FileReader::readBinary("world.bin", (char*) buffer, chunks->volume * CHUNK_BLOCKS);
+        chunks->read(buffer);
+        delete[] buffer;
+        LOG_F(INFO, fmt::format("WORLD LOADED FROM {}", "world.bin").c_str());
     }
 
     if (Events::scroll_up){

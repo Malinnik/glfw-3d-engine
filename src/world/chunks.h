@@ -21,6 +21,7 @@ class Chunks {
         block* get(int x, int y, int z);
         void set(int x, int y, int z, int id);
         block *rayCast(vec3 a, vec3 dir, float maxDist, vec3 &end, vec3 &norm, vec3 &iend);
+        void write(unsigned char *path);
+        void read(unsigned char *path);
         Chunk *getChunk(int x, int y, int z);
-        
 };

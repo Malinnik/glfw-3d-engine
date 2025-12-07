@@ -79,7 +79,6 @@ void Chunks::set(int x, int y, int z, int id){
 	if (lz == CHUNK_D-1 && (chunk = getChunk(cx, cy, cz+1))) chunk->modified = true;
 }
 
-
 block* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, vec3& iend) {
 	float px = a.x;
 	float py = a.y;
@@ -166,4 +165,32 @@ block* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, v
 	end.z = pz + t * dz;
 	norm.x = norm.y = norm.z = 0.0f;
 	return nullptr;
+}
+
+void Chunks::write(unsigned char* dest)
+{
+	size_t index = 0;
+	for (size_t i = 0; i < volume; i++)
+	{
+		Chunk* chunk = chunks[i];
+		for (size_t j = 0; j < CHUNK_BLOCKS; j++, index++)
+		{
+			dest[index] = chunk->blocks[j].id;
+		}
+	}
+}
+
+
+void Chunks::read(unsigned char* source)
+{
+	size_t index = 0;
+	for (size_t i = 0; i < volume; i++)
+	{
+		Chunk* chunk = chunks[i];
+		for (size_t j = 0; j < CHUNK_BLOCKS; j++, index++)
+		{
+			chunk->blocks[j].id = source[index];
+		}
+		chunk->modified = true;
+	}
 }
