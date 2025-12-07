@@ -9,8 +9,9 @@ World::World()
     texture = load_texture("./assets/images/TextureAtlas.png");
     camera = new Camera(vec3(20,15,20), radians(70.0f));
     crosshair = new Crosshair();
+
     
-    chunks = new Chunks(8,6,8);
+    chunks = new Chunks(2,6,2);
     meshes = new Mesh*[chunks->volume];
     for (size_t i = 0; i < chunks->volume; i++)
         meshes[i] = nullptr;
@@ -32,10 +33,10 @@ World::~World()
 
 void World::draw()
 {
-    inputLoop->inputLoop();
-
     reRenderChunks();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    inputLoop->inputLoop();
 
     shader->use();
     texture->bind();

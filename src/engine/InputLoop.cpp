@@ -7,7 +7,15 @@
 #include "world/chunk.h"
 #include "files/file.h"
 
-InputLoop::InputLoop(Camera* camera, Chunks* chunks) : camera(camera), chunks(chunks) {}
+InputLoop::InputLoop(Camera* camera, Chunks* chunks) : camera(camera), chunks(chunks) 
+{
+    blockSelector = new BlockSelector(camera);
+}
+
+InputLoop::~InputLoop()
+{
+    delete blockSelector;
+}
 
 void InputLoop::updateTime(){
     float currentTime = glfwGetTime();
@@ -92,16 +100,20 @@ void InputLoop::inputLoop(){
         vec3 norm;
         vec3 iend;
         
-        if (Events::jClicked(GLFW_MOUSE_BUTTON_1)){
-            block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
-            if (blk != nullptr)
+        block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
+        if (blk != nullptr)
+        {
+            LOG_F(INFO, fmt::format("Found block at: {} {} {}",iend.x, iend.y, iend.z).c_str());
+            blockSelector->draw(iend.x, iend.y, iend.z);
+
+            if (Events::jClicked(GLFW_MOUSE_BUTTON_1)){
                 chunks->set((int)iend.x, (int)iend.y, (int)iend.z, 0);
-        }
-        if (Events::jClicked(GLFW_MOUSE_BUTTON_2)){
-            block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
-            if (blk != nullptr)
+            }
+            if (Events::jClicked(GLFW_MOUSE_BUTTON_2)){
                 chunks->set((int)(iend.x)+(int)(norm.x), (int)(iend.y)+(int)(norm.y), (int)(iend.z)+(int)(norm.z), 2);
+            }
         }
+
         
     }
 }
