@@ -47,7 +47,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mode)
 
 void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    LOG_F(INFO, fmt::format("X: {}  Y: {}", xoffset, yoffset).c_str());
     if (yoffset > 0)
         Events::scroll_up = true;
     else if (yoffset < 0)

@@ -3,6 +3,7 @@
 #include "glm/gtc/noise.hpp"
 #include "chunk.h"
 #include "blocks/block.h"
+#include "world/generation.h"
 
 #include "loguru.hpp"
 #include "fmt/format.h"
@@ -21,11 +22,7 @@ Chunk::Chunk(int xpos, int ypos, int zpos) : x(xpos), y(ypos), z(zpos)
 			for (int y = 0; y < CHUNK_H; y++)
             {
 				int real_y = y + this->y * CHUNK_H;
-				int id = Chunk::generate(real_x, real_y, real_z) > 0.1f;
-				// LOG_F(INFO, fmt::format("ID: {}", id).c_str());
-				if (real_y <= 2)
-					id = 2;
-				blocks[(y * CHUNK_D + z) * CHUNK_W + x].id = id;
+				blocks[(y * CHUNK_D + z) * CHUNK_W + x].id = WorldGeneration::getBlockType(real_x, real_y, real_z);
 			}
 		}
 	}

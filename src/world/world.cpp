@@ -10,7 +10,7 @@ World::World()
     camera = new Camera(vec3(20,15,20), radians(70.0f));
     crosshair = new Crosshair();
     
-    chunks = new Chunks(8,4,8);
+    chunks = new Chunks(8,6,8);
     meshes = new Mesh*[chunks->volume];
     for (size_t i = 0; i < chunks->volume; i++)
         meshes[i] = nullptr;

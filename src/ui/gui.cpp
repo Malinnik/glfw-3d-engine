@@ -9,7 +9,7 @@
 #include "glad/glad.h"
 #include "gui.h"
 #include <vector>
-#include "world/chunk.h"
+#include "world/generation.h"
 
 imgui::imgui(GLFWwindow *window) { this->window = window; init();}
 
@@ -206,16 +206,16 @@ void imgui::ShowPerlinNoisePopup(const char* popupName = "Perlin Noise") {
                 for (int x = 0; x < width; ++x) {
                     float nx = static_cast<float>(x) / width * scale;
                     float ny = static_cast<float>(y) / height * scale;
-                    float noiseVal = Chunk::generate(nx, ny, 0);
+                    float noiseVal = WorldGeneration::getTerrainHeight(nx, 0, ny);
                     
                     // Преобразуем из [-1, 1] в [0, 255]
-                    unsigned char pixelVal = static_cast<unsigned char>((noiseVal + 1.0f) * 0.5f * 255.0f);
+                    // unsigned char pixelVal = static_cast<unsigned char>((noiseVal + 1.0f) * 0.5f * 255.0f);
                     
-                    int idx = (y * width + x) * 4;
-                    pixelData[idx + 0] = pixelVal;     // R
-                    pixelData[idx + 1] = pixelVal;     // G  
-                    pixelData[idx + 2] = pixelVal;     // B
-                    pixelData[idx + 3] = 255;          // A
+                    // int idx = (y * width + x) * 4;
+                    // pixelData[idx + 0] = pixelVal;     // R
+                    // pixelData[idx + 1] = pixelVal;     // G  
+                    // pixelData[idx + 2] = pixelVal;     // B
+                    // pixelData[idx + 3] = 255;          // A
                 }
             }
             
