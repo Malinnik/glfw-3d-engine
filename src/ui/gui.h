@@ -17,6 +17,8 @@ public:
 
   void main_bar();
 
+  void ShowPerlinNoisePopup(const char *popupName);
+
   void render();
   void cleanup();
 

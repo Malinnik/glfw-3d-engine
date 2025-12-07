@@ -6,7 +6,10 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "glad/glad.h"
 #include "gui.h"
+#include <vector>
+#include "world/chunk.h"
 
 imgui::imgui(GLFWwindow *window) { this->window = window; init();}
 
@@ -107,14 +110,13 @@ void imgui::main_bar() {
     if (ImGui::Button("Test File Save-Loading")) {
       ImGui::OpenPopup("Test File Save");
     }
-
+    if (ImGui::Button("Noise visualization")) {
+      ImGui::OpenPopup("Visualize Perlin noise");
+    }
     ImGui::Bullet();
     ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
-
-    // if (ImGui::BeginPopup("Debug shader")) {
-    //   // show_debug_shaders(vshader, fshader);
-    //   ImGui::EndPopup();
-    // }
+    
+    ShowPerlinNoisePopup("Visualize Perlin noise");
     if (ImGui::BeginPopup("Debug metrics")) {
       ImGui::ShowMetricsWindow();
       ImGui::EndPopup();
@@ -177,4 +179,90 @@ void imgui::main_bar() {
     exit(0);
 
   ImGui::EndMainMenuBar();
+}
+
+
+void imgui::ShowPerlinNoisePopup(const char* popupName = "Perlin Noise") {
+    static bool firstOpen = true;
+    static GLuint glTextureID = 0;
+    static int width = 256, height = 256;
+    
+    
+    if (ImGui::BeginPopup(popupName)) {
+        ImGui::OpenPopup(popupName);
+        ImGui::SetNextWindowSize(ImVec2(512, 512), ImGuiCond_FirstUseEver);
+        // Генерация/регенерация текстуры
+        if (firstOpen) {
+            // Освобождаем старую текстуру если была
+            if (glTextureID != 0) {
+                glDeleteTextures(1, &glTextureID);
+            }
+            
+            // Генерируем данные шума (RGBA - 4 канала)
+            std::vector<unsigned char> pixelData(width * height * 4);
+            float scale = 5.0f;
+            
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    float nx = static_cast<float>(x) / width * scale;
+                    float ny = static_cast<float>(y) / height * scale;
+                    float noiseVal = Chunk::generate(nx, ny, 0);
+                    
+                    // Преобразуем из [-1, 1] в [0, 255]
+                    unsigned char pixelVal = static_cast<unsigned char>((noiseVal + 1.0f) * 0.5f * 255.0f);
+                    
+                    int idx = (y * width + x) * 4;
+                    pixelData[idx + 0] = pixelVal;     // R
+                    pixelData[idx + 1] = pixelVal;     // G  
+                    pixelData[idx + 2] = pixelVal;     // B
+                    pixelData[idx + 3] = 255;          // A
+                }
+            }
+            
+            // Создаём OpenGL текстуру
+            glGenTextures(1, &glTextureID);
+            glBindTexture(GL_TEXTURE_2D, glTextureID);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, 
+                        GL_RGBA, GL_UNSIGNED_BYTE, pixelData.data());
+            
+            glBindTexture(GL_TEXTURE_2D, 0);
+            firstOpen = false;
+        }
+        
+        // Простая кнопка для регенерации
+        if (ImGui::Button("Regenerate")) {
+            firstOpen = true;
+        }
+        
+        ImGui::Separator();
+        
+        // Отображение текстуры
+        if (glTextureID != 0) {
+            ImGui::Text("Resolution: %dx%d", width, height);
+            ImVec2 imageSize(static_cast<float>(width), static_cast<float>(height));
+            
+            // Конвертируем GLuint в ImTextureID (void*)
+            ImTextureID textureID = (ImTextureID)(intptr_t)glTextureID;
+            ImGui::Image(textureID, imageSize);
+        }
+        
+        ImGui::Separator();
+        
+        // Кнопка закрытия
+        if (ImGui::Button("Close")) {
+            if (glTextureID != 0) {
+                glDeleteTextures(1, &glTextureID);
+                glTextureID = 0;
+            }
+            firstOpen = true;
+            ImGui::CloseCurrentPopup();
+        }
+        
+        ImGui::EndPopup();
+    }
 }
