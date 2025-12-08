@@ -5,7 +5,7 @@
 #include <random>
 #include <iostream>
 
-inline float WorldGeneration::getTerrainHeight(int x, int y, int z)
+float WorldGeneration::getTerrainHeight(int x, int y, int z)
 {
     float height = 0.0f;
 
