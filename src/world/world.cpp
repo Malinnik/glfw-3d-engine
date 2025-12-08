@@ -11,7 +11,7 @@ World::World()
     crosshair = new Crosshair();
 
     
-    chunks = new Chunks(2,6,2);
+    chunks = new Chunks(10,6,10);
     meshes = new Mesh*[chunks->volume];
     for (size_t i = 0; i < chunks->volume; i++)
         meshes[i] = nullptr;
