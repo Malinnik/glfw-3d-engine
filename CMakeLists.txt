@@ -4,6 +4,15 @@ set(PROJECT_NAME "3d-engine")
 project(${PROJECT_NAME})
 set(PROJECT_TARGET ${PROJECT_NAME} CACHE STRING "Executable name" FORCE)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+    message(STATUS "Using ccache: ${CCACHE_PROGRAM}")
+endif()
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}scripts/buildsystems/vcpkg.cmake")
 

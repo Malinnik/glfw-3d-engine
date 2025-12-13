@@ -1,11 +1,11 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "blocks/block.h"
 
 using namespace glm;
 
 class Chunk;
-class block;
 
 class Chunks {
     public:
@@ -18,9 +18,9 @@ class Chunks {
         Chunks(int w, int h, int d);
         ~Chunks();
 
-        block* get(int x, int y, int z);
+        blocks::Block* get(int x, int y, int z);
         void set(int x, int y, int z, int id);
-        block *rayCast(vec3 a, vec3 dir, float maxDist, vec3 &end, vec3 &norm, vec3 &iend);
+        blocks::Block *rayCast(vec3 a, vec3 dir, float maxDist, vec3 &end, vec3 &norm, vec3 &iend);
         void write(unsigned char *path);
         void read(unsigned char *path);
         Chunk *getChunk(int x, int y, int z);

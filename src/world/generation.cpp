@@ -5,6 +5,8 @@
 #include <random>
 #include <iostream>
 
+#include "blocks/blocks.h"
+
 float WorldGeneration::getTerrainHeight(int x, int y, int z)
 {
     float height = 0.0f;
@@ -81,22 +83,22 @@ int WorldGeneration::getBlockType(int x, int y, int z)
     
     if (y > height) {
         // Над поверхностью
-        if (y < 64) return 5;  // Вода ниже уровня моря
-        return 0;                     // Воздух
+        if (y < 64) return blocks::WATER_BLOCK->id;  // Вода ниже уровня моря
+        return blocks::AIR_BLOCK->id;                // Воздух
     }
     else if (y > height - 1) {
         // Поверхностный слой
-        if (y > 90) return 4;   // Снег на вершинах
-        if (y > 80) return 3;  // Камень на высоте
-        return 1;                   // Трава
+        if (y > 90) return blocks::SNOW_BLOCK->id;   // Снег на вершинах
+        if (y > 80) return blocks::COBBLESTONE_BLOCK->id;  // Камень на высоте
+        return blocks::GRASS_BLOCK->id;                   // Трава
     }
     else if (y > height - 4) {
         // Подпочвенный слой
-        return 2;
+        return blocks::DIRT_BLOCK->id;
     }
     else {
         // Глубокие слои
-        return 3;
+        return blocks::COBBLESTONE_BLOCK->id;
     }
 }
 

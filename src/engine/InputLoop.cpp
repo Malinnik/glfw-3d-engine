@@ -100,7 +100,7 @@ void InputLoop::inputLoop(){
         vec3 norm;
         vec3 iend;
         
-        block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
+        blocks::Block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
         if (blk != nullptr)
         {
             blockSelector->draw(iend.x, iend.y, iend.z);

@@ -10,9 +10,7 @@
 
 Chunk::Chunk(int xpos, int ypos, int zpos) : x(xpos), y(ypos), z(zpos)
 {
-	blocks = new block[CHUNK_BLOCKS];
-	
-    for (int z = 0; z < CHUNK_D; z++)
+	for (int z = 0; z < CHUNK_D; z++)
     {
 		for (int x = 0; x < CHUNK_W; x++)
         {
@@ -22,7 +20,7 @@ Chunk::Chunk(int xpos, int ypos, int zpos) : x(xpos), y(ypos), z(zpos)
 			for (int y = 0; y < CHUNK_H; y++)
             {
 				int real_y = y + this->y * CHUNK_H;
-				blocks[(y * CHUNK_D + z) * CHUNK_W + x].id = WorldGeneration::getBlockType(real_x, real_y, real_z);
+				blocksIds[(y * CHUNK_D + z) * CHUNK_W + x] = WorldGeneration::getBlockType(real_x, real_y, real_z);
 			}
 		}
 	}
@@ -30,7 +28,7 @@ Chunk::Chunk(int xpos, int ypos, int zpos) : x(xpos), y(ypos), z(zpos)
 
 Chunk::~Chunk()
 {
-    delete[] blocks; 
+    delete[] blocksIds; 
 }
 
 inline float Chunk::generate(int x, int y, int z)

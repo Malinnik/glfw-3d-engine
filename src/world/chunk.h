@@ -12,7 +12,7 @@
 class Chunk{
     public:
         int x, y, z;
-        block* blocks;
+        unsigned int blocksIds[CHUNK_BLOCKS];
         bool modified = true;
         Chunk(int x, int y, int z);
         ~Chunk();

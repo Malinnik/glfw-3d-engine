@@ -4,6 +4,7 @@ set(SOURCE main.cpp)
 file(GLOB_RECURSE CORE_SRC
     "*.cpp"
     "engine/*.cpp"
+    "engine/resources/*.cpp"
     "files/*.cpp"
     "graphics/*.cpp"
     "loaders/*.cpp"
