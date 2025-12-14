@@ -26,7 +26,7 @@ class BlockRenderer {
 
         blocks::Block* block(int x, int y, int z);        
         bool isBlocked(int x, int y, int z);
-        void vertex(size_t index, int x, int y, int z, float u, float v, float l);
+        void vertex(size_t* index, float x, float y, float z, float u, float v, float l);
 
 
 };

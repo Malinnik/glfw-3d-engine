@@ -63,13 +63,13 @@ Mesh *BlockRenderer::render(Chunk *chunk, const Chunk** chunks, bool ambientOccl
 						h = isBlocked(x+1,y+1,z-1)*aoFactor;
 					}
 
-					vertex(index, x - 0.5f, y + 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
-					vertex(index, x - 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-c-b-f));
-					vertex(index, x + 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-b-g));
+					vertex(&index, x - 0.5f, y + 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
+					vertex(&index, x - 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-c-b-f));
+					vertex(&index, x + 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-b-g));
 
-					vertex(index, x - 0.5f, y + 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
-					vertex(index, x + 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-b-g));
-					vertex(index, x + 0.5f, y + 0.5f, z - 0.5f, u1,v1, l*(1.0f-a-d-h));
+					vertex(&index, x - 0.5f, y + 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
+					vertex(&index, x + 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-b-g));
+					vertex(&index, x + 0.5f, y + 0.5f, z - 0.5f, u1,v1, l*(1.0f-a-d-h));
 				}
 				if (!isBlocked(x,y-1,z)){
 					l = 0.75f;
@@ -87,13 +87,13 @@ Mesh *BlockRenderer::render(Chunk *chunk, const Chunk** chunks, bool ambientOccl
 						h = isBlocked(x+1,y-1,z-1)*aoFactor;
 					}
 
-					vertex(index, x - 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-c-d-e));
-					vertex(index, x + 0.5f, y - 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
-					vertex(index, x - 0.5f, y - 0.5f, z + 0.5f, u1,v2, l*(1.0f-c-b-f));
+					vertex(&index, x - 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-c-d-e));
+					vertex(&index, x + 0.5f, y - 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
+					vertex(&index, x - 0.5f, y - 0.5f, z + 0.5f, u1,v2, l*(1.0f-c-b-f));
 
-					vertex(index, x - 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-c-d-e));
-					vertex(index, x + 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-a-d-h));
-					vertex(index, x + 0.5f, y - 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
+					vertex(&index, x - 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-c-d-e));
+					vertex(&index, x + 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-a-d-h));
+					vertex(&index, x + 0.5f, y - 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
 				}
 
 				if (!isBlocked(x+1,y,z)){
@@ -112,13 +112,13 @@ Mesh *BlockRenderer::render(Chunk *chunk, const Chunk** chunks, bool ambientOccl
 						h = isBlocked(x+1,y+1,z-1)*aoFactor;
 					}
 
-					vertex(index, x + 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
-					vertex(index, x + 0.5f, y + 0.5f, z - 0.5f, u2,v2, l*(1.0f-d-a-h));
-					vertex(index, x + 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-b-g));
+					vertex(&index, x + 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
+					vertex(&index, x + 0.5f, y + 0.5f, z - 0.5f, u2,v2, l*(1.0f-d-a-h));
+					vertex(&index, x + 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-b-g));
 
-					vertex(index, x + 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
-					vertex(index, x + 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-b-g));
-					vertex(index, x + 0.5f, y - 0.5f, z + 0.5f, u1,v1, l*(1.0f-b-c-f));
+					vertex(&index, x + 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
+					vertex(&index, x + 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-b-g));
+					vertex(&index, x + 0.5f, y - 0.5f, z + 0.5f, u1,v1, l*(1.0f-b-c-f));
 				}
 				if (!isBlocked(x-1,y,z)){
 					l = 0.85f;
@@ -136,13 +136,13 @@ Mesh *BlockRenderer::render(Chunk *chunk, const Chunk** chunks, bool ambientOccl
 						h = isBlocked(x-1,y+1,z-1)*aoFactor;
 					}
 
-					vertex(index, x - 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-c-d-e));
-					vertex(index, x - 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
-					vertex(index, x - 0.5f, y + 0.5f, z - 0.5f, u1,v2, l*(1.0f-d-a-h));
+					vertex(&index, x - 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-c-d-e));
+					vertex(&index, x - 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
+					vertex(&index, x - 0.5f, y + 0.5f, z - 0.5f, u1,v2, l*(1.0f-d-a-h));
 
-					vertex(index, x - 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-c-d-e));
-					vertex(index, x - 0.5f, y - 0.5f, z + 0.5f, u2,v1, l*(1.0f-b-c-f));
-					vertex(index, x - 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
+					vertex(&index, x - 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-c-d-e));
+					vertex(&index, x - 0.5f, y - 0.5f, z + 0.5f, u2,v1, l*(1.0f-b-c-f));
+					vertex(&index, x - 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
 				}
 
 				if (!isBlocked(x,y,z+1)){
@@ -161,13 +161,13 @@ Mesh *BlockRenderer::render(Chunk *chunk, const Chunk** chunks, bool ambientOccl
 						h = isBlocked(x-1,y+1,z+1)*aoFactor;
 					}
 
-					vertex(index, x - 0.5f, y - 0.5f, z + 0.5f, u1,v1, l*(1.0f-c-d-e));
-					vertex(index, x + 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
-					vertex(index, x - 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-d-h));
+					vertex(&index, x - 0.5f, y - 0.5f, z + 0.5f, u1,v1, l*(1.0f-c-d-e));
+					vertex(&index, x + 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
+					vertex(&index, x - 0.5f, y + 0.5f, z + 0.5f, u1,v2, l*(1.0f-a-d-h));
 
-					vertex(index, x - 0.5f, y - 0.5f, z + 0.5f, u1,v1, l*(1.0f-c-d-e));
-					vertex(index, x + 0.5f, y - 0.5f, z + 0.5f, u2,v1, l*(1.0f-b-c-f));
-					vertex(index, x + 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
+					vertex(&index, x - 0.5f, y - 0.5f, z + 0.5f, u1,v1, l*(1.0f-c-d-e));
+					vertex(&index, x + 0.5f, y - 0.5f, z + 0.5f, u2,v1, l*(1.0f-b-c-f));
+					vertex(&index, x + 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
 				}
 				if (!isBlocked(x,y,z-1)){
 					l = 0.8f;
@@ -185,13 +185,13 @@ Mesh *BlockRenderer::render(Chunk *chunk, const Chunk** chunks, bool ambientOccl
 						h = isBlocked(x-1,y+1,z-1)*aoFactor;
 					}
 
-					vertex(index, x - 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
-					vertex(index, x - 0.5f, y + 0.5f, z - 0.5f, u2,v2, l*(1.0f-a-d-h));
-					vertex(index, x + 0.5f, y + 0.5f, z - 0.5f, u1,v2, l*(1.0f-a-b-g));
+					vertex(&index, x - 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
+					vertex(&index, x - 0.5f, y + 0.5f, z - 0.5f, u2,v2, l*(1.0f-a-d-h));
+					vertex(&index, x + 0.5f, y + 0.5f, z - 0.5f, u1,v2, l*(1.0f-a-b-g));
 
-					vertex(index, x - 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
-					vertex(index, x + 0.5f, y + 0.5f, z - 0.5f, u1,v2, l*(1.0f-a-b-g));
-					vertex(index, x + 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-b-c-f));
+					vertex(&index, x - 0.5f, y - 0.5f, z - 0.5f, u2,v1, l*(1.0f-c-d-e));
+					vertex(&index, x + 0.5f, y + 0.5f, z - 0.5f, u1,v2, l*(1.0f-a-b-g));
+					vertex(&index, x + 0.5f, y - 0.5f, z - 0.5f, u1,v1, l*(1.0f-b-c-f));
 				}
 			}
 		}
@@ -250,15 +250,16 @@ bool BlockRenderer::isBlocked(int x, int y, int z)
 		return true;
 	if (block(x, y, z)->id != 0)
 		return true;
+	return false;
 }
 
-void BlockRenderer::vertex(size_t index, int x, int y, int z, float u, float v, float l)
+void BlockRenderer::vertex(size_t* index, float x, float y, float z, float u, float v, float l)
 {
-	buffer[index+0] = x;
-	buffer[index+1] = y;
-	buffer[index+2] = z;
-	buffer[index+3] = u;
-	buffer[index+4] = v;
-	buffer[index+5] = l;
-	index += vertex_SIZE;
+	buffer[*index+0] = x;
+	buffer[*index+1] = y;
+	buffer[*index+2] = z;
+	buffer[*index+3] = u;
+	buffer[*index+4] = v;
+	buffer[*index+5] = l;
+	*index += vertex_SIZE;
 }
