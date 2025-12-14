@@ -55,14 +55,15 @@ namespace blocks
         return *this;
     }
 
-    BlockTextures::~BlockTextures()
-    {
-        delete front;
-        delete back;
-        delete up;
-        delete down;
-        delete left;
-        delete right;
-    }
+    // BlockTextures::~BlockTextures()
+    
+    // {
+    //     delete front;
+    //     delete back;
+    //     delete up;
+    //     delete down;
+    //     delete left;
+    //     delete right;
+    // }
 
 }

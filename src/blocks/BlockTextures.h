@@ -26,7 +26,7 @@ namespace blocks
         BlockTextures addRight(resources::ResourceLocation* resource);
         
         
-        ~BlockTextures();
+        // ~BlockTextures();
         
     };
     
