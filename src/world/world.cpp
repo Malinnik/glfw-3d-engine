@@ -3,8 +3,12 @@
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 
+#include "blocks/blocks.h"
+
 World::World()
 {
+    blocks::initializeBlocks();
+
     shader = new Shader("./assets/shaders/block.vert", "./assets/shaders/block.frag");
     texture = load_texture("./assets/images/TextureAtlas.png");
     camera = new Camera(vec3(20,15,20), radians(70.0f));
@@ -12,6 +16,7 @@ World::World()
 
     
     chunks = new Chunks(10,6,10);
+    // chunks = new Chunks(5,3,5);
     meshes = new Mesh*[chunks->volume];
     for (size_t i = 0; i < chunks->volume; i++)
         meshes[i] = nullptr;
