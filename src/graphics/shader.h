@@ -14,6 +14,7 @@ public:
 
     void use();
     void uniformMatrix(std::string name, glm::mat4 matrix);
+    void uniformInt(const std::string& name, int value);
 
 private:
     GLuint ID;

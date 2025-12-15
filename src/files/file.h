@@ -9,7 +9,9 @@ class FileReader
 
         std::string getText();
         static std::string readBinary(const char *path);
-        static std::string readText(const std::string& path);
+        static void readBinary(const char *path, char *data, size_t size);
+        static void writeBinary(const char *path, const char *data, size_t size);
+        static std::string readText(const std::string &path);
 
     private:
         std::string _path;

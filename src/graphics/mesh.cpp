@@ -5,11 +5,11 @@
 
 Mesh::Mesh(const float *buffer, size_t vertices, const int *attrs) : vertices(vertices)
 {
-    int vertex_size = 0;
+    vertexSize = 0;
 
     for (int i = 0; attrs[i]; i++)
     {
-        vertex_size += attrs[i];
+        vertexSize += attrs[i];
     }
 
     glGenVertexArrays(1, &vao);
@@ -17,13 +17,13 @@ Mesh::Mesh(const float *buffer, size_t vertices, const int *attrs) : vertices(ve
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertex_size * vertices, buffer, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexSize * vertices, buffer, GL_STATIC_DRAW);
 
     int offset = 0;
     for (int i = 0; attrs[i]; i++)
     {
         int size = attrs[i];
-        glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, sizeof(float)*vertex_size, (GLvoid*)(offset*sizeof(float)));
+        glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, sizeof(float)*vertexSize, (GLvoid*)(offset*sizeof(float)));
         glEnableVertexAttribArray(i);
         offset += size;
     }
@@ -35,6 +35,14 @@ Mesh::~Mesh()
 {
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
+}
+
+void Mesh::reload(const float *buffer, size_t vertices)
+{
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexSize * vertices, buffer, GL_STATIC_DRAW);
+    this->vertices = vertices;
 }
 
 void Mesh::draw(unsigned int primitive)

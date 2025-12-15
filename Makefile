@@ -1,7 +1,7 @@
 .PHONY: build docs
 
 build:
-	cmake -B ./build -S . -D CMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}scripts/buildsystems/vcpkg.cmake"
+	cmake -B ./build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="/MDd" -D CMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}scripts/buildsystems/vcpkg.cmake"
 
 docs:
 	cd ./docs/Doxygen && doxygen
@@ -18,5 +18,5 @@ run:
 run-win:
 	make build
 	cmake --build ./build
-	./build/src/Debug/3d-engine.exe
+	./build/Debug/3d-engine.exe
 

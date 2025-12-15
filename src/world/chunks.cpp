@@ -1,5 +1,6 @@
 #include "chunks.h"
 #include "world/chunk.h"
+#include "blocks/block.h"
 
 Chunks::Chunks(int w, int h, int d) : w(w), h(h), d(d)
 {
@@ -27,7 +28,7 @@ Chunks::~Chunks()
     delete[] chunks;
 }
 
-block *Chunks::get(int x, int y, int z)
+blocks::Block* Chunks::get(int x, int y, int z)
 {
     int cx = x / CHUNK_W;
     int cy = y / CHUNK_H;
@@ -45,7 +46,7 @@ block *Chunks::get(int x, int y, int z)
     int ly = y - cy * CHUNK_H;
     int lz = z - cz * CHUNK_D;
 
-    return &chunk->blocks[(ly * CHUNK_D + lz) * CHUNK_W + lx];
+    return blocks::get(chunk->blocksIds[(ly * CHUNK_D + lz) * CHUNK_W + lx]);
 }
 
 Chunk* Chunks::getChunk(int x, int y, int z){
@@ -67,7 +68,7 @@ void Chunks::set(int x, int y, int z, int id){
 	int lx = x - cx * CHUNK_W;
 	int ly = y - cy * CHUNK_H;
 	int lz = z - cz * CHUNK_D;
-	chunk->blocks[(ly * CHUNK_D + lz) * CHUNK_W + lx].id = id;
+	chunk->blocksIds[(ly * CHUNK_D + lz) * CHUNK_W + lx] = id;
 	chunk->modified = true;
 
 	if (lx == 0 && (chunk = getChunk(cx-1, cy, cz))) chunk->modified = true;
@@ -79,8 +80,7 @@ void Chunks::set(int x, int y, int z, int id){
 	if (lz == CHUNK_D-1 && (chunk = getChunk(cx, cy, cz+1))) chunk->modified = true;
 }
 
-
-block* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, vec3& iend) {
+blocks::Block* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, vec3& iend) {
 	float px = a.x;
 	float py = a.y;
 	float pz = a.z;
@@ -115,8 +115,8 @@ block* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, v
 	int steppedIndex = -1;
 
 	while (t <= maxDist){
-		block* voxel = get(ix, iy, iz);
-		if (voxel == nullptr || voxel->id){
+		blocks::Block* block = get(ix, iy, iz);
+		if (block == nullptr || block->id){
 			end.x = px + t * dx;
 			end.y = py + t * dy;
 			end.z = pz + t * dz;
@@ -129,7 +129,7 @@ block* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, v
 			if (steppedIndex == 0) norm.x = -stepx;
 			if (steppedIndex == 1) norm.y = -stepy;
 			if (steppedIndex == 2) norm.z = -stepz;
-			return voxel;
+			return block;
 		}
 		if (txMax < tyMax) {
 			if (txMax < tzMax) {
@@ -166,4 +166,32 @@ block* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, v
 	end.z = pz + t * dz;
 	norm.x = norm.y = norm.z = 0.0f;
 	return nullptr;
+}
+
+void Chunks::write(unsigned char* dest)
+{
+	size_t index = 0;
+	for (size_t i = 0; i < volume; i++)
+	{
+		Chunk* chunk = chunks[i];
+		for (size_t j = 0; j < CHUNK_BLOCKS; j++, index++)
+		{
+			dest[index] = blocks::get(chunk->blocksIds[j])->id;
+		}
+	}
+}
+
+
+void Chunks::read(unsigned char* source)
+{
+	size_t index = 0;
+	for (size_t i = 0; i < volume; i++)
+	{
+		Chunk* chunk = chunks[i];
+		for (size_t j = 0; j < CHUNK_BLOCKS; j++, index++)
+		{
+			blocks::get(chunk->blocksIds[j])->id = source[index];
+		}
+		chunk->modified = true;
+	}
 }

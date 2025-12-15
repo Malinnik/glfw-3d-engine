@@ -1,8 +1,7 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-
 #include "engine/camera.h"
+#include "engine/BlockSelector.h"
 #include "window/events.h"
 #include "world/chunks.h"
 
@@ -10,6 +9,7 @@
 class InputLoop{
     Camera* camera;
     Chunks* chunks;
+    BlockSelector* blockSelector;
     
     private:
         void updateTime();
@@ -19,4 +19,5 @@ class InputLoop{
         float lastTime = glfwGetTime();
         float delta = 0.0f;
         InputLoop(Camera* camera, Chunks* chunks);
+        ~InputLoop();
 };

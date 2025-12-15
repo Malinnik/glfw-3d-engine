@@ -27,6 +27,7 @@ Crosshair::~Crosshair()
 
 void Crosshair::draw()
 {
+    glLineWidth(2.0f);
     shader->use();
-    mesh->draw(GL_LINE);
+    mesh->draw(GL_LINES);
 }

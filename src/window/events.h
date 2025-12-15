@@ -1,5 +1,4 @@
 #pragma once
-#include <GLFW/glfw3.h>
 
 #include <window/window.h>
 
@@ -17,6 +16,8 @@ class Events {
         static float y;
         static bool cursor_locked;
         static bool cursor_started;
+        static bool scroll_up;
+        static bool scroll_down;
         
         void pullEvents();
         Events(GLFWwindow *window);

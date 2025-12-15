@@ -1,6 +1,6 @@
-#include <GLFW/glfw3.h>
 #include <string.h>
-
+#include "loguru.hpp"
+#include "fmt/format.h"
 #include "events.h"
 
 bool* Events::keys;
@@ -12,6 +12,8 @@ float Events::x = 0.0f;
 float Events::y = 0.0f;
 bool Events::cursor_locked = false;
 bool Events::cursor_started = false;
+bool Events::scroll_up = false;
+bool Events::scroll_down = false;
 
 #define MOUSE_BUTTONS 1024
 
@@ -43,6 +45,15 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mode)
     }
 }
 
+void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    if (yoffset > 0)
+        Events::scroll_up = true;
+    else if (yoffset < 0)
+        Events::scroll_down = true;
+
+}
+
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (Events::cursor_locked)
@@ -63,6 +74,8 @@ void Events::pullEvents()
     current++;
     deltaX = 0.0f;
     deltaY = 0.0f;
+    scroll_up = false;
+    scroll_down = false;
     glfwPollEvents();
 }
 
@@ -77,6 +90,7 @@ Events::Events(GLFWwindow *window)
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetScrollCallback(window, mouse_scroll_callback);
 }
 
 bool Events::pressed(int keyCode)
