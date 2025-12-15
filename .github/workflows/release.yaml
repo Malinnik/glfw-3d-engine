@@ -1,0 +1,73 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Engine release version'
+        required: true
+        default: "0.0.0"
+env:
+  RELEASE_VERSION: ${{ github.event.inputs.version || 'testrelease' }}
+  BRANCH_NAME: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || 'main' }}
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+       - run: echo "exists just for outputs"
+    outputs:
+      build_name: '${{ env.RELEASE_VERSION }}'
+  build_linux:
+    needs: [prepare]
+    uses: ./.github/workflows/appimage.yml
+    with:
+      build_name: '${{ needs.prepare.outputs.build_name }}'
+  build_macos:
+    needs: [prepare]
+    uses: ./.github/workflows/macos.yml
+    with:
+      build_name: '${{ needs.prepare.outputs.build_name }}'
+  build_windows:
+    needs: [prepare]
+    uses: ./.github/workflows/windows-clang.yml
+    with:
+      build_name: '${{ needs.prepare.outputs.build_name }}'
+  publish_release:
+    runs-on: ubuntu-latest
+    needs: [build_linux, build_macos, build_windows]
+    steps:
+    - name: Checkout Release Branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.BRANCH_NAME }}
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v4
+      with:
+        path: ./artifacts
+    - name: Show Artifacts
+      run: |
+        mkdir release
+        mv ./artifacts/AppImage/VoxelCore-latest-x86_64.AppImage \
+           ./release/voxelcore-${RELEASE_VERSION}_x86-64.AppImage
+        mv ./artifacts/VoxelEngineMacOs/VoxelEngineMacApp.dmg \
+           ./release/voxelcore-${RELEASE_VERSION}_macos.dmg
+        (cd ./artifacts/Windows-Build && zip -r ../../release/voxelcore-${RELEASE_VERSION}_win64.zip .)
+        ls -la ./release
+        tree ./release
+    - name: Create Tag
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+        TAG_NAME="v${RELEASE_VERSION}"
+        git tag -a "${TAG_NAME}" -m "Automated release tag ${TAG_NAME}"
+        git push origin "${TAG_NAME}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Release Draft
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ env.RELEASE_VERSION }}
+        draft: true
+        files: |
+          ./release/*
+        generate_release_notes: true
