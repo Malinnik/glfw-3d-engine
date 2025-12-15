@@ -36,7 +36,7 @@ std::tuple<float, float, float, float> BlockRenderer::calculateUV(resources::Res
 	unsigned int id = location->getID();
 	float uvsize = 1.0f/16.0f;
 	float u1 = (id % 16) * uvsize;
-	float v1 = 1-((1 + id / 16) * uvsize);
+	float v1 = (id / 16) * uvsize;
 	float u2 = u1 + uvsize;
 	float v2 = v1 + uvsize;
     return std::tuple<float, float, float, float>(u1, v1, u2, v2);
@@ -67,7 +67,7 @@ Mesh* BlockRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 				a = b = c = d = e = f = g = h = 0.0f;
 
 				if (!IS_BLOCKED(x,y+1,z)){
-					std::tuple<float, float, float, float>(u1, v1, u2, v2) = calculateUV(block->textures.up);
+					std::tie(u1, v1, u2, v2) = calculateUV(block->textures.up);
 					l = 1.0f;
 
 					if (ambientOcclusion){
@@ -91,7 +91,7 @@ Mesh* BlockRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 					VERTEX(index, x + 0.5f, y + 0.5f, z - 0.5f, u1,v1, l*(1.0f-a-d-h));
 				}
 				if (!IS_BLOCKED(x,y-1,z)){
-					std::tuple<float, float, float, float>(u1, v1, u2, v2) = calculateUV(block->textures.down);
+					std::tie(u1, v1, u2, v2) = calculateUV(block->textures.down);
 					l = 0.75f;
 
 					if (ambientOcclusion){
@@ -116,7 +116,7 @@ Mesh* BlockRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 				}
 
 				if (!IS_BLOCKED(x+1,y,z)){
-					std::tuple<float, float, float, float>(u1, v1, u2, v2) = calculateUV(block->textures.right);
+					std::tie(u1, v1, u2, v2) = calculateUV(block->textures.right);
 					l = 0.95f;
 
 					if (ambientOcclusion){
@@ -140,7 +140,7 @@ Mesh* BlockRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 					VERTEX(index, x + 0.5f, y - 0.5f, z + 0.5f, u1,v1, l*(1.0f-b-c-f));
 				}
 				if (!IS_BLOCKED(x-1,y,z)){
-					std::tuple<float, float, float, float>(u1, v1, u2, v2) = calculateUV(block->textures.left);
+					std::tie(u1, v1, u2, v2) = calculateUV(block->textures.left);
 					l = 0.85f;
 
 					if (ambientOcclusion){
@@ -165,7 +165,7 @@ Mesh* BlockRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 				}
 
 				if (!IS_BLOCKED(x,y,z+1)){
-					std::tuple<float, float, float, float>(u1, v1, u2, v2) = calculateUV(block->textures.front);
+					std::tie(u1, v1, u2, v2) = calculateUV(block->textures.front);
 					l = 0.9f;
 
 					if (ambientOcclusion){
@@ -189,7 +189,7 @@ Mesh* BlockRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, u2,v2, l*(1.0f-a-b-g));
 				}
 				if (!IS_BLOCKED(x,y,z-1)){
-					std::tuple<float, float, float, float>(u1, v1, u2, v2) = calculateUV(block->textures.back);
+					std::tie(u1, v1, u2, v2) = calculateUV(block->textures.back);
 					l = 0.8f;
 
 					if (ambientOcclusion){

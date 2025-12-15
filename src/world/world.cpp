@@ -1,5 +1,6 @@
 #include "world.h"
 #include "loaders/image/png_loader.h"
+#include <glad/glad.h>
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 
@@ -47,7 +48,10 @@ void World::draw()
     inputLoop->inputLoop();
 
     shader->use();
+    // ensure texture unit 0 active and sampler points to it
+    glActiveTexture(GL_TEXTURE0);
     texture->bind();
+    shader->uniformInt("u_texture0", 0);
     shader->uniformMatrix("projview", camera->getProjection()*camera->getView());
     mat4 model(1.0f);
     for (size_t i = 0; i < chunks->volume; i++){

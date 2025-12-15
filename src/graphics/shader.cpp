@@ -54,6 +54,13 @@ void Shader::uniformMatrix(std::string name, glm::mat4 matrix)
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+void Shader::uniformInt(const std::string& name, int value)
+{
+    GLint loc = glGetUniformLocation(ID, name.c_str());
+    if (loc >= 0)
+        glUniform1i(loc, value);
+}
+
 void Shader::compileShader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
 {
     LOG_F(INFO, "--------------------------- COMPILING SHADERS -------------------------------");

@@ -38,7 +38,7 @@ void Atlas::build()
 
         for (int y = 0; y < TILE_SIZE; y++) {
             for (int x = 0; x < TILE_SIZE; x++) {
-                int srcY = TILE_SIZE - 1 - y;  // Инвертируем Y
+                int srcY = y; // PNG loader already flips rows, keep source orientation
                 int srcIdx = (srcY * TILE_SIZE + x) * 4;
                 int dstIdx = ((pixelY + y) * ATLAS_SIZE + (pixelX + x)) * 4;
 
@@ -58,7 +58,8 @@ void Atlas::build()
     glBindTexture(GL_TEXTURE_2D, textureID);
     
     // Настройки текстур
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    // Use nearest sampling to avoid mipmap bleeding between atlas tiles.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
