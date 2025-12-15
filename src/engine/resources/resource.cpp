@@ -28,8 +28,9 @@ namespace resources
             }
         }
 
-        REGISTRY.insert({size+1, uniqueResourceName});
-        return size+1;
+        LOG_F(INFO, fmt::format("RESOURCE::REGISTERED: {}: {}", size, uniqueResourceName).c_str());
+        REGISTRY.insert({size, uniqueResourceName});
+        return size;
     }
 
     Resource *registerResource(Resource *resource)

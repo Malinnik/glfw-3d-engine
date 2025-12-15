@@ -26,8 +26,10 @@ namespace blocks
             }
         }
         
-        blocks::REGISTRY.insert({size+1, uniqueBlockName});
-        return size+1;
+        LOG_F(INFO, fmt::format("BLOCK::REGISTERED: {}: {}", size, uniqueBlockName).c_str());
+        
+        blocks::REGISTRY.insert({size, uniqueBlockName});
+        return size;
     }
 
     Block* get(unsigned int id)
