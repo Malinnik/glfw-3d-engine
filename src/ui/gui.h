@@ -19,6 +19,8 @@ public:
 
   void ShowPerlinNoisePopup(const char *popupName);
 
+  void DrawAtlasPopup(const char* popupName);
+
   void render();
   void cleanup();
 

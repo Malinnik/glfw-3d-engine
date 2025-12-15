@@ -4,13 +4,16 @@
 #include "glm/ext.hpp"
 
 #include "blocks/blocks.h"
+#include "graphics/atlas.h"
 
 World::World()
 {
     blocks::initializeBlocks();
+    Atlas::build();
 
     shader = new Shader("./assets/shaders/block.vert", "./assets/shaders/block.frag");
-    texture = load_texture("./assets/images/TextureAtlas.png");
+    texture = Atlas::textureAtlas;
+    // texture = load_texture("./assets/images/TextureAtlas.png");
     camera = new Camera(vec3(20,15,20), radians(70.0f));
     crosshair = new Crosshair();
 

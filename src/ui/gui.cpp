@@ -10,6 +10,7 @@
 #include "gui.h"
 #include <vector>
 #include "world/generation.h"
+#include "graphics/atlas.h"
 
 imgui::imgui(GLFWwindow *window) { this->window = window; init();}
 
@@ -113,10 +114,15 @@ void imgui::main_bar() {
     if (ImGui::Button("Noise visualization")) {
       ImGui::OpenPopup("Visualize Perlin noise");
     }
+    if (ImGui::Button("Show Texture Atlas"))
+      ImGui::OpenPopup("Texture Atlas");
+    
+
     ImGui::Bullet();
     ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
     
     ShowPerlinNoisePopup("Visualize Perlin noise");
+    DrawAtlasPopup("Texture Atlas");
     if (ImGui::BeginPopup("Debug metrics")) {
       ImGui::ShowMetricsWindow();
       ImGui::EndPopup();
@@ -189,7 +195,6 @@ void imgui::ShowPerlinNoisePopup(const char* popupName = "Perlin Noise") {
     
     
     if (ImGui::BeginPopup(popupName)) {
-        ImGui::OpenPopup(popupName);
         ImGui::SetNextWindowSize(ImVec2(512, 512), ImGuiCond_FirstUseEver);
         // Генерация/регенерация текстуры
         if (firstOpen) {
@@ -265,4 +270,92 @@ void imgui::ShowPerlinNoisePopup(const char* popupName = "Perlin Noise") {
         
         ImGui::EndPopup();
     }
+}
+
+void imgui::DrawAtlasPopup(const char* popupName = "Texture Atlas") {
+    // ImGui::Begin("Texture Atlas Viewer", &showAtlasWindow, ImGuiWindowFlags_AlwaysAutoResize);
+     if (ImGui::BeginPopup(popupName)) {
+      if (Atlas::textureAtlas) {
+          // Показываем информацию об атласе
+          ImGui::Text("Atlas ID: %u", Atlas::textureAtlas->id);
+          ImGui::Text("Size: %d x %d", Atlas::textureAtlas->width, Atlas::textureAtlas->height);
+          ImGui::Separator();
+          
+          // Отображаем саму текстуру
+          // Конвертируем GLuint в ImTextureID (void*)
+          
+          // Размер для отображения (можно масштабировать)
+          static float scale = 1.0f;
+          ImGui::SliderFloat("Scale", &scale, 0.1f, 4.0f);
+          
+          float displayWidth = Atlas::textureAtlas->width * scale;
+          float displayHeight = Atlas::textureAtlas->height * scale;
+
+
+          ImGui::Image((ImTextureID)(intptr_t)Atlas::textureAtlas->id, ImVec2(Atlas::textureAtlas->width, Atlas::textureAtlas->height));
+          
+          // Показываем координаты при наведении
+          if (ImGui::IsItemHovered()) {
+              ImGui::BeginTooltip();
+              
+              // Получаем позицию курсора относительно текстуры
+              ImVec2 mousePos = ImGui::GetMousePos();
+              ImVec2 imageMin = ImGui::GetItemRectMin();
+              ImVec2 imageMax = ImGui::GetItemRectMax();
+              
+              // Нормализуем координаты (0-1)
+              float u = (mousePos.x - imageMin.x) / (imageMax.x - imageMin.x);
+              float v = (mousePos.y - imageMin.y) / (imageMax.y - imageMin.y);
+              
+              // Координаты в пикселях
+              int pixelX = static_cast<int>(u * Atlas::textureAtlas->width);
+              int pixelY = static_cast<int>(v * Atlas::textureAtlas->height);
+              
+              // Координаты текстуры в сетке
+              int gridX = pixelX / 16;
+              int gridY = pixelY / 16;
+              int textureId = gridY * 16 + gridX;
+              
+              ImGui::Text("Pixel: (%d, %d)", pixelX, pixelY);
+              ImGui::Text("Grid: [%d, %d]", gridX, gridY);
+              ImGui::Text("Texture ID: %d", textureId);
+              
+              // Показываем увеличенный фрагмент
+              float regionSize = 32.0f;
+              float zoom = 4.0f;
+              
+              // Вычисляем UV координаты для увеличения
+              float uv0_x = (pixelX - regionSize * 0.5f) / Atlas::textureAtlas->width;
+              float uv0_y = (pixelY - regionSize * 0.5f) / Atlas::textureAtlas->height;
+              float uv1_x = (pixelX + regionSize * 0.5f) / Atlas::textureAtlas->width;
+              float uv1_y = (pixelY + regionSize * 0.5f) / Atlas::textureAtlas->height;
+              
+              // Ограничиваем координаты
+              uv0_x = std::max(0.0f, uv0_x);
+              uv0_y = std::max(0.0f, uv0_y);
+              uv1_x = std::min(1.0f, uv1_x);
+              uv1_y = std::min(1.0f, uv1_y);
+              
+              ImGui::Image((ImTextureID)(intptr_t)Atlas::textureAtlas->id, 
+                  ImVec2(regionSize * zoom, regionSize * zoom),
+                  ImVec2(uv0_x, uv0_y),
+                  ImVec2(uv1_x, uv1_y)
+              );
+              
+              ImGui::EndTooltip();
+          }
+          
+      } else {
+          ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Atlas not built!");
+          if (ImGui::Button("Build Atlas Now")) {
+              Atlas::build();
+          }
+      }
+      
+
+      if (ImGui::Button("Close")) {
+            ImGui::CloseCurrentPopup();
+      }
+    ImGui::EndPopup();
+  }
 }
