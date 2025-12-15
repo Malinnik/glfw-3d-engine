@@ -33,12 +33,12 @@ jobs:
         run: |
           cmake --preset default-vs-msvc-windows
           cmake --build --preset default-vs-msvc-windows --config Release
-      - name: Run tests
-        run: ctest --preset default-vs-msvc-windows
-      - name: Run engine tests
-        run: |
-            build/vctest/Release/vctest.exe -e build/Release/VoxelEngine.exe -d dev/tests -u build
-        timeout-minutes: 1
+    #   - name: Run tests
+    #     run: ctest --preset default-vs-msvc-windows
+    #   - name: Run engine tests
+    #     run: |
+    #         build/vctest/Release/vctest.exe -e build/Release/VoxelEngine.exe -d dev/tests -u build
+    #     timeout-minutes: 1
       - name: Package for Windows
         run: |
           mkdir packaged

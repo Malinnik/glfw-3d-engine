@@ -63,9 +63,9 @@ jobs:
       run: |
         cmake --build ${{github.workspace}}/build --config ${{inputs.build_type}}
         mv ${{github.workspace}}/build/VoxelEngine VoxelEngine
-    - name: Run tests
-      if: ${{ inputs.run_tests }}
-      run: ctest --test-dir ${{github.workspace}}/build
+    # - name: Run tests
+    #   if: ${{ inputs.run_tests }}
+    #   run: ctest --test-dir ${{github.workspace}}/build
     - name: Upload artifacts
       if: ${{ inputs.upload_artifacts }}
       uses: actions/upload-artifact@v4

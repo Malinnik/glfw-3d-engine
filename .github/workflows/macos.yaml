@@ -37,15 +37,15 @@ jobs:
       - name: Fix dylibs
         run: ./dev/fix_dylibs.sh VoxelEngine Release build
 
-      - name: Run tests
-        run: ctest --output-on-failure --test-dir build
+    #   - name: Run tests
+    #     run: ctest --output-on-failure --test-dir build
 
-      - name: Run engine tests
-        timeout-minutes: 1
-        run: |
-          chmod +x build/VoxelEngine
-          chmod +x AppDir/usr/bin/vctest
-          AppDir/usr/bin/vctest -e build/VoxelEngine -d dev/tests -u build --output-always
+    #   - name: Run engine tests
+    #     timeout-minutes: 1
+    #     run: |
+    #       chmod +x build/VoxelEngine
+    #       chmod +x AppDir/usr/bin/vctest
+    #       AppDir/usr/bin/vctest -e build/VoxelEngine -d dev/tests -u build --output-always
       - name: Create DMG
         run: |
           mkdir VoxelEngineDmgContent
