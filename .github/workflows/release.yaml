@@ -28,7 +28,7 @@ jobs:
 #       build_name: '${{ needs.prepare.outputs.build_name }}'
   build_windows:
     needs: [prepare]
-    uses: ./.github/workflows/windows-clang.yml
+    uses: ./.github/workflows/windows.yml
     with:
       build_name: '${{ needs.prepare.outputs.build_name }}'
   publish_release:
