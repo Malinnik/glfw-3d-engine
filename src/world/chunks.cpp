@@ -2,7 +2,7 @@
 #include "world/chunk.h"
 #include "blocks/block.h"
 
-Chunks::Chunks(int w, int h, int d) : w(w), h(h), d(d)
+Chunks::Chunks(int w, int h, int d, int ox, int oy, int oz) : w(w), h(h), d(d), ox(ox), oy(oy), oz(oz)
 {
     volume = w*h*d;
     chunks = new Chunk*[volume];

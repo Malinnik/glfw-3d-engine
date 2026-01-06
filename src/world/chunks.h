@@ -10,12 +10,15 @@ class Chunk;
 class Chunks {
     public:
         Chunk** chunks;
+        Chunk** chunksSecond;
+        Mesh** meshes;
+        Mesh** meshesSecond;
         size_t volume;
 
         unsigned int w,h,d;
+        int ox, oy, oz;
 
-
-        Chunks(int w, int h, int d);
+        Chunks(int w, int h, int d, int ox, int oy, int oz);
         ~Chunks();
 
         blocks::Block* get(int x, int y, int z);
