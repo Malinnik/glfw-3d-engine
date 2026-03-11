@@ -7,7 +7,7 @@
 
 #include "blocks/blocks.h"
 
-float WorldGeneration::getTerrainHeight(int x, int y, int z)
+float WorldGeneration::getTerrainHeight(int x, int z)
 {
     float height = 0.0f;
 
@@ -79,7 +79,7 @@ inline float WorldGeneration::getBiomeAdjustedHeight(int x, int y, int z) {
 
 int WorldGeneration::getBlockType(int x, int y, int z)
 {
-    float height = WorldGeneration::getTerrainHeight(x, y, z);
+    float height = WorldGeneration::getTerrainHeight(x, z);
     
     if (y > height) {
         // Над поверхностью

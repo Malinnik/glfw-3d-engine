@@ -211,7 +211,7 @@ void imgui::ShowPerlinNoisePopup(const char* popupName = "Perlin Noise") {
                 for (int x = 0; x < width; ++x) {
                     float nx = static_cast<float>(x) / width * scale;
                     float ny = static_cast<float>(y) / height * scale;
-                    float noiseVal = WorldGeneration::getTerrainHeight(nx, 0, ny);
+                    float noiseVal = WorldGeneration::getTerrainHeight(nx, ny);
                     
                     // Преобразуем из [-1, 1] в [0, 255]
                     // unsigned char pixelVal = static_cast<unsigned char>((noiseVal + 1.0f) * 0.5f * 255.0f);
