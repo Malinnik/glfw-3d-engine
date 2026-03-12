@@ -1,5 +1,6 @@
 #include "chunks.h"
 #include "world/chunk.h"
+#include "world/generation.h"
 #include "blocks/block.h"
 
 Chunks::Chunks(int w, int h, int d, int ox, int oy, int oz) : w(w), h(h), d(d), ox(ox), oy(oy), oz(oz)
@@ -53,6 +54,11 @@ Chunk* Chunks::getChunk(int x, int y, int z){
 	if (x < 0 || y < 0 || z < 0 || x >= w || y >= h || z >= d)
 		return nullptr;
 	return chunks[(y * d + z) * w + x];
+}
+
+Chunk* Chunks::getChunkByBlock(int x, int y, int z)
+{
+    return nullptr;
 }
 
 void Chunks::set(int x, int y, int z, int id){
@@ -194,4 +200,176 @@ void Chunks::read(unsigned char* source)
 		}
 		chunk->modified = true;
 	}
+}
+
+void Chunks::setCenter(int x, int y, int z)
+{
+	int cx = x / CHUNK_W;
+	int cy = y / CHUNK_H;
+	int cz = z / CHUNK_D;
+	cx -= ox;
+	cy -= oy;
+	cz -= oz;
+	if (x < 0) cx--;
+	if (y < 0) cy--;
+	if (z < 0) cz--;
+	cx -= w/2;
+	cy -= h/2;
+	cz -= d/2;
+	if (cx != 0 || cy != 0 || cz != 0)
+		translate(cx,cy,cz);
+}
+
+void Chunks::translate(int dx, int dy, int dz)
+{
+	for (unsigned int i = 0; i < volume; i++)
+	{
+		chunksSecond[i] = nullptr;
+		meshesSecond[i] = nullptr;
+	}
+
+	for (unsigned int y = 0; y < h; y++){
+		for (unsigned int z = 0; z < d; z++){
+			for (unsigned int x = 0; x < w; x++){
+				Chunk* chunk = chunks[(y * d + z) * w + x];
+				int nx = x - dx;
+				int ny = y - dy;
+				int nz = z - dz;
+				if (chunk == nullptr)
+					continue;
+				Mesh* mesh = meshes[(y * d + z) * w + x];
+				if (nx < 0 || ny < 0 || nz < 0 || nx >= w || ny >= h || nz >= d){
+					delete chunk;
+					delete mesh;
+					continue;
+				}
+				meshesSecond[(ny * d + nz) * w + nx] = mesh;
+				chunksSecond[(ny * d + nz) * w + nx] = chunk;
+			}
+		}
+	}
+	Chunk** ctemp = chunks;
+	chunks = chunksSecond;
+	chunksSecond = ctemp;
+
+	Mesh** mtemp = meshes;
+	meshes = meshesSecond;
+	meshesSecond = mtemp;
+
+	ox += dx;
+	oy += dy;
+	oz += dz;
+}
+
+bool Chunks::loadVisible()
+{
+	int nearX = 0;
+	int nearY = 0;
+	int nearZ = 0;
+	int minDistance = 1000000000;
+	for (unsigned int y = 0; y < h; y++){
+		for (unsigned int z = 1; z < d-1; z++){
+			for (unsigned int x = 1; x < w-1; x++){
+				int index = (y * d + z) * w + x;
+				Chunk* chunk = chunks[index];
+				if (chunk != nullptr)
+					continue;
+				int lx = x - w / 2;
+				int ly = y - h / 2;
+				int lz = z - d / 2;
+				int distance = (lx * lx + ly * ly + lz * lz);
+				if (distance < minDistance){
+					minDistance = distance;
+					nearX = x;
+					nearY = y;
+					nearZ = z;
+				}
+			}
+		}
+	}
+
+	int index = (nearY * d + nearZ) * w + nearX;
+	Chunk* chunk = chunks[index];
+	if (chunk != nullptr)
+		return false;
+	
+		chunk = new Chunk(nearX+ox,nearY+oy,nearZ+oz);
+	// if (!worldFiles->getChunk(chunk->x, chunk->z, (char*)chunk->voxels)){
+		WorldGenerator::generate(chunk->blocksIds, chunk->x, chunk->y, chunk->z);
+	// }
+
+	chunks[index] = chunk;
+	// Lighting::onChunkLoaded(ox+nearX, oy+nearY, oz+nearZ);
+	return true;
+}
+
+bool Chunks::_buildMeshes(BlockRenderer* renderer) {
+	int nearX = 0;
+	int nearY = 0;
+	int nearZ = 0;
+	int minDistance = 1000000000;
+	for (unsigned int y = 0; y < h; y++){
+		for (unsigned int z = 1; z < d-1; z++){
+			for (unsigned int x = 1; x < w-1; x++){
+				int index = (y * d + z) * w + x;
+				Chunk* chunk = chunks[index];
+				if (chunk == nullptr)
+					continue;
+				Mesh* mesh = meshes[index];
+				if (mesh != nullptr && !chunk->modified)
+					continue;
+				int lx = x - w / 2;
+				int ly = y - h / 2;
+				int lz = z - d / 2;
+				int distance = (lx * lx + ly * ly + lz * lz);
+				if (distance < minDistance){
+					minDistance = distance;
+					nearX = x;
+					nearY = y;
+					nearZ = z;
+				}
+			}
+		}
+	}
+
+	int index = (nearY * d + nearZ) * w + nearX;
+
+	Chunk* closes[27];
+
+	Chunk* chunk = chunks[index];
+	if (chunk == nullptr)
+		return false;
+	Mesh* mesh = meshes[index];
+	if (mesh == nullptr || chunk->modified){
+		if (mesh != nullptr)
+			delete mesh;
+		if (chunk->isEmpty()){
+			meshes[index] = nullptr;
+			return false;
+		}
+		chunk->modified = false;
+		for (int i = 0; i < 27; i++)
+			closes[i] = nullptr;
+		for (size_t j = 0; j < volume; j++){
+			Chunk* other = chunks[j];
+			if (other == nullptr)
+				continue;
+
+			int ox = other->x - chunk->x;
+			int oy = other->y - chunk->y;
+			int oz = other->z - chunk->z;
+
+			if (abs(ox) > 1 || abs(oy) > 1 || abs(oz) > 1)
+				continue;
+
+			ox += 1;
+			oy += 1;
+			oz += 1;
+			closes[(oy * 3 + oz) * 3 + ox] = other;
+		}
+		mesh = renderer->render(chunk, (const Chunk**)closes);
+		meshes[index] = mesh;
+		return true;
+	}
+	return false;
 }

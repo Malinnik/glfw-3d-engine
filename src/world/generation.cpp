@@ -6,8 +6,10 @@
 #include <iostream>
 
 #include "blocks/blocks.h"
+#include "blocks/block.h"
+#include "world/chunk.h"
 
-float WorldGeneration::getTerrainHeight(int x, int z)
+float WorldGenerator::getTerrainHeight(int x, int z)
 {
     float height = 0.0f;
 
@@ -19,7 +21,7 @@ float WorldGeneration::getTerrainHeight(int x, int z)
     float freq = baseFrequency;
     float amp = amplitude;
 
-    int seed = WorldGeneration::randomSeed();
+    int seed = WorldGenerator::randomSeed();
 
     for (int i = 0; i < octaves; i++)
     {
@@ -36,7 +38,7 @@ float WorldGeneration::getTerrainHeight(int x, int z)
     return height;
 }
 
-inline float WorldGeneration::getBiomeAdjustedHeight(int x, int y, int z) {
+inline float WorldGenerator::getBiomeAdjustedHeight(int x, int y, int z) {
     // Шум для определения биома (низкая частота)
     glm::vec2 biomeCoord(x * 0.001f, z * 0.001f);
     float biomeNoise = glm::perlin(biomeCoord);
@@ -77,9 +79,9 @@ inline float WorldGeneration::getBiomeAdjustedHeight(int x, int y, int z) {
     return height;
 }
 
-int WorldGeneration::getBlockType(int x, int y, int z)
+int WorldGenerator::getBlockType(int x, int y, int z)
 {
-    float height = WorldGeneration::getTerrainHeight(x, z);
+    float height = WorldGenerator::getTerrainHeight(x, z);
     
     if (y > height) {
         // Над поверхностью
@@ -102,8 +104,25 @@ int WorldGeneration::getBlockType(int x, int y, int z)
     }
 }
 
+void WorldGenerator::generate(unsigned int* blockIds, int cx, int cy, int cz)
+{
+    for (int z = 0; z < CHUNK_D; z++)
+    {
+        for (int x = 0; x < CHUNK_W; x++)
+        {
+            int real_x = x + cx * CHUNK_W;
+            int real_z = z + cx * CHUNK_D;
+            int real_y = WorldGenerator::getTerrainHeight(real_x, real_z);
 
-int WorldGeneration::randomSeed()
+            for (int y = 0; y < CHUNK_H; y++)
+            {
+                blockIds[(y * CHUNK_D  + z) * CHUNK_W + x] = WorldGenerator::getBlockType(real_x, real_y, real_z);
+            }
+        }
+    }
+}
+
+int WorldGenerator::randomSeed()
 {
     std::random_device dev;
     std::mt19937 rng(dev());

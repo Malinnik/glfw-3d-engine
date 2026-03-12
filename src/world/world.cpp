@@ -16,12 +16,12 @@ World::World()
     shader = new Shader("./assets/shaders/block.vert", "./assets/shaders/block.frag");
     texture = Atlas::textureAtlas;
     // texture = load_texture("./assets/images/TextureAtlas.png");
-    int playerY = WorldGeneration::getTerrainHeight(20, 20);
+    int playerY = WorldGenerator::getTerrainHeight(20, 20);
     camera = new Camera(vec3(20, playerY + 4, 20), radians(70.0f));
     crosshair = new Crosshair();
 
     
-    chunks = new Chunks(10,6,10);
+    chunks = new Chunks(16,1,16, 0,0,0);
     // chunks = new Chunks(5,3,5);
     meshes = new Mesh*[chunks->volume];
     for (size_t i = 0; i < chunks->volume; i++)

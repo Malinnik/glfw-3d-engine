@@ -20,7 +20,7 @@ Chunk::Chunk(int xpos, int ypos, int zpos) : x(xpos), y(ypos), z(zpos)
 			for (int y = 0; y < CHUNK_H; y++)
             {
 				int real_y = y + this->y * CHUNK_H;
-				blocksIds[(y * CHUNK_D + z) * CHUNK_W + x] = WorldGeneration::getBlockType(real_x, real_y, real_z);
+				blocksIds[(y * CHUNK_D + z) * CHUNK_W + x] = WorldGenerator::getBlockType(real_x, real_y, real_z);
 			}
 		}
 	}
@@ -31,7 +31,16 @@ Chunk::~Chunk()
     delete[] blocksIds; 
 }
 
-inline float Chunk::generate(int x, int y, int z)
+bool Chunk::isEmpty()
 {
-    return glm::perlin(glm::vec3(x*0.025f, y*0.025f, z*0.025f)); //real_y <= (height) * 60 + 30;
+    int id = -1;
+	for (int i = 0; i < CHUNK_BLOCKS; i++){
+		if (blocksIds[i] != id){
+			if (id != -1)
+				return false;
+			else
+				id = blocksIds[i];
+		}
+	}
+	return true;
 }

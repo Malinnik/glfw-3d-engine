@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "blocks/block.h"
+#include "graphics/BlockRenderer.h"
 
 using namespace glm;
 
@@ -9,10 +10,10 @@ class Chunk;
 
 class Chunks {
     public:
-        Chunk** chunks;
-        Chunk** chunksSecond;
-        Mesh** meshes;
-        Mesh** meshesSecond;
+        Chunk **chunks;
+        Chunk **chunksSecond;
+        Mesh **meshes;
+        Mesh **meshesSecond;
         size_t volume;
 
         unsigned int w,h,d;
@@ -21,10 +22,19 @@ class Chunks {
         Chunks(int w, int h, int d, int ox, int oy, int oz);
         ~Chunks();
 
+        Chunk* getChunk(int x, int y, int z);
+        Chunk* getChunkByBlock(int x, int y, int z);
+
         blocks::Block* get(int x, int y, int z);
-        void set(int x, int y, int z, int id);
         blocks::Block *rayCast(vec3 a, vec3 dir, float maxDist, vec3 &end, vec3 &norm, vec3 &iend);
+
+        void set(int x, int y, int z, int id);
         void write(unsigned char *path);
         void read(unsigned char *path);
-        Chunk *getChunk(int x, int y, int z);
+
+        void setCenter(int x, int y, int z);
+        void translate(int dx, int dy, int dz);
+
+        bool loadVisible();
+        bool _buildMeshes(BlockRenderer *renderer);
 };
