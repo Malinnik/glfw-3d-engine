@@ -27,22 +27,23 @@ Chunks::~Chunks()
 
 blocks::Block* Chunks::get(int x, int y, int z)
 {
-    int cx = x / CHUNK_W;
-    int cy = y / CHUNK_H;
-    int cz = z / CHUNK_D;
-    if (x < 0) cx--;
-    if (y < 0) cy--;
-    if (z < 0) cz--;
-
-    if (cx < 0 || cy < 0 || cz < 0 || cx >= w || cy >= h || cz >= d)
-        return nullptr;
-    
-    Chunk* chunk = chunks[(cy * d + cz) * w + cx];
-
-    int lx = x - cx * CHUNK_W;
-    int ly = y - cy * CHUNK_H;
-    int lz = z - cz * CHUNK_D;
-
+    x -= ox * CHUNK_W;
+	y -= oy * CHUNK_H;
+	z -= oz * CHUNK_D;
+	int cx = x / CHUNK_W;
+	int cy = y / CHUNK_H;
+	int cz = z / CHUNK_D;
+	if (x < 0) cx--;
+	if (y < 0) cy--;
+	if (z < 0) cz--;
+	if (cx < 0 || cy < 0 || cz < 0 || cx >= w || cy >= h || cz >= d)
+		return nullptr;
+	Chunk* chunk = chunks[(cy * d + cz) * w + cx];
+	if (chunk == nullptr)
+		return nullptr;
+	int lx = x - cx * CHUNK_W;
+	int ly = y - cy * CHUNK_H;
+	int lz = z - cz * CHUNK_D;
     return blocks::get(chunk->blocksIds[(ly * CHUNK_D + lz) * CHUNK_W + lx]);
 }
 
@@ -69,6 +70,9 @@ Chunk* Chunks::getChunkByBlock(int x, int y, int z)
 }
 
 void Chunks::set(int x, int y, int z, int id){
+	x -= ox * CHUNK_W;
+	y -= oy * CHUNK_H;
+	z -= oz * CHUNK_D;
 	int cx = x / CHUNK_W;
 	int cy = y / CHUNK_H;
 	int cz = z / CHUNK_D;
@@ -78,19 +82,21 @@ void Chunks::set(int x, int y, int z, int id){
 	if (cx < 0 || cy < 0 || cz < 0 || cx >= w || cy >= h || cz >= d)
 		return;
 	Chunk* chunk = chunks[(cy * d + cz) * w + cx];
+	if (chunk == nullptr)
+		return;
 	int lx = x - cx * CHUNK_W;
 	int ly = y - cy * CHUNK_H;
 	int lz = z - cz * CHUNK_D;
 	chunk->blocksIds[(ly * CHUNK_D + lz) * CHUNK_W + lx] = id;
 	chunk->modified = true;
 
-	if (lx == 0 && (chunk = getChunk(cx-1, cy, cz))) chunk->modified = true;
-	if (ly == 0 && (chunk = getChunk(cx, cy-1, cz))) chunk->modified = true;
-	if (lz == 0 && (chunk = getChunk(cx, cy, cz-1))) chunk->modified = true;
+	if (lx == 0 && (chunk = getChunk(cx+ox-1, cy+oy, cz+oz))) chunk->modified = true;
+	if (ly == 0 && (chunk = getChunk(cx+ox, cy+oy-1, cz+oz))) chunk->modified = true;
+	if (lz == 0 && (chunk = getChunk(cx+ox, cy+oy, cz+oz-1))) chunk->modified = true;
 
-	if (lx == CHUNK_W-1 && (chunk = getChunk(cx+1, cy, cz))) chunk->modified = true;
-	if (ly == CHUNK_H-1 && (chunk = getChunk(cx, cy+1, cz))) chunk->modified = true;
-	if (lz == CHUNK_D-1 && (chunk = getChunk(cx, cy, cz+1))) chunk->modified = true;
+	if (lx == CHUNK_W-1 && (chunk = getChunk(cx+ox+1, cy+oy, cz+oz))) chunk->modified = true;
+	if (ly == CHUNK_H-1 && (chunk = getChunk(cx+ox, cy+oy+1, cz+oz))) chunk->modified = true;
+	if (lz == CHUNK_D-1 && (chunk = getChunk(cx+ox, cy+oy, cz+oz+1))) chunk->modified = true;
 }
 
 blocks::Block* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, vec3& iend) {
