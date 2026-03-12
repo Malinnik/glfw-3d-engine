@@ -47,7 +47,7 @@ void World::draw()
     // reRenderChunks();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    chunks->setCenter(camera->position.x, 0, camera->position.z);
+    chunks->setCenter(camera->position.x, camera->position.y, camera->position.z);
     chunks->_buildMeshes(&blockRenderer);
     chunks->loadVisible();
     
