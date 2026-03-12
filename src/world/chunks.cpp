@@ -6,20 +6,16 @@
 Chunks::Chunks(int w, int h, int d, int ox, int oy, int oz) : w(w), h(h), d(d), ox(ox), oy(oy), oz(oz)
 {
     volume = w*h*d;
-    chunks = new Chunk*[volume];
+	chunks = new Chunk*[volume];
+	chunksSecond = new Chunk*[volume];
 
-    int index = 0;
-    for (int y = 0; y < h; y++)
-    {
-        for (int z = 0; z < d; z++)
-        {
-            for (int x = 0; x < w; x++, index++)
-            {
-                Chunk* chunk = new Chunk(x,y,z);
-                chunks[index] = chunk;
-            }
-        }
-    }
+	meshes = new Mesh*[volume];
+	meshesSecond = new Mesh*[volume];
+
+	for (size_t i = 0; i < volume; i++){
+		chunks[i] = nullptr;
+		meshes[i] = nullptr;
+	}
 }
 
 Chunks::~Chunks()
@@ -58,7 +54,18 @@ Chunk* Chunks::getChunk(int x, int y, int z){
 
 Chunk* Chunks::getChunkByBlock(int x, int y, int z)
 {
-    return nullptr;
+    x -= ox * CHUNK_W;
+	y -= oy * CHUNK_H;
+	z -= oz * CHUNK_D;
+	int cx = x / CHUNK_W;
+	int cy = y / CHUNK_H;
+	int cz = z / CHUNK_D;
+	if (x < 0) cx--;
+	if (y < 0) cy--;
+	if (z < 0) cz--;
+	if (cx < 0 || cy < 0 || cz < 0 || cx >= w || cy >= h || cz >= d)
+		return nullptr;
+	return chunks[(cy * d + cz) * w + cx];
 }
 
 void Chunks::set(int x, int y, int z, int id){
@@ -172,34 +179,6 @@ blocks::Block* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3&
 	end.z = pz + t * dz;
 	norm.x = norm.y = norm.z = 0.0f;
 	return nullptr;
-}
-
-void Chunks::write(unsigned char* dest)
-{
-	size_t index = 0;
-	for (size_t i = 0; i < volume; i++)
-	{
-		Chunk* chunk = chunks[i];
-		for (size_t j = 0; j < CHUNK_BLOCKS; j++, index++)
-		{
-			dest[index] = blocks::get(chunk->blocksIds[j])->id;
-		}
-	}
-}
-
-
-void Chunks::read(unsigned char* source)
-{
-	size_t index = 0;
-	for (size_t i = 0; i < volume; i++)
-	{
-		Chunk* chunk = chunks[i];
-		for (size_t j = 0; j < CHUNK_BLOCKS; j++, index++)
-		{
-			blocks::get(chunk->blocksIds[j])->id = source[index];
-		}
-		chunk->modified = true;
-	}
 }
 
 void Chunks::setCenter(int x, int y, int z)

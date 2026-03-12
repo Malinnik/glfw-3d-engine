@@ -29,8 +29,6 @@ class Chunks {
         blocks::Block *rayCast(vec3 a, vec3 dir, float maxDist, vec3 &end, vec3 &norm, vec3 &iend);
 
         void set(int x, int y, int z, int id);
-        void write(unsigned char *path);
-        void read(unsigned char *path);
 
         void setCenter(int x, int y, int z);
         void translate(int dx, int dy, int dz);

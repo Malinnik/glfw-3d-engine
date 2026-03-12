@@ -44,8 +44,12 @@ World::~World()
 
 void World::draw()
 {
-    reRenderChunks();
+    // reRenderChunks();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    chunks->setCenter(camera->position.x, 0, camera->position.z);
+    chunks->_buildMeshes(&blockRenderer);
+    chunks->loadVisible();
     
     inputLoop->inputLoop();
 
@@ -58,7 +62,11 @@ void World::draw()
     mat4 model(1.0f);
     for (size_t i = 0; i < chunks->volume; i++){
         Chunk* chunk = chunks->chunks[i];
+        if (chunk == nullptr)
+            continue;
         Mesh* mesh = meshes[i];
+        if (mesh == nullptr)
+            continue;
         model = glm::translate(mat4(1.0f), vec3(chunk->x*CHUNK_W+0.5f, chunk->y*CHUNK_H+0.5f, chunk->z*CHUNK_D+0.5f));
         shader->uniformMatrix("model", model);
         mesh->draw(GL_TRIANGLES);
