@@ -106,17 +106,66 @@ int WorldGenerator::getBlockType(int x, int y, int z)
 
 void WorldGenerator::generate(unsigned int* blockIds, int cx, int cy, int cz)
 {
+    // Pre-compute heights for all X,Z columns to avoid redundant calls
+    // getTerrainHeight is expensive (6 octaves of perlin noise)
+    float heightCache[CHUNK_W * CHUNK_D];
+
     for (int z = 0; z < CHUNK_D; z++)
     {
         for (int x = 0; x < CHUNK_W; x++)
         {
             int real_x = x + cx * CHUNK_W;
             int real_z = z + cz * CHUNK_D;
+            heightCache[z * CHUNK_W + x] = WorldGenerator::getTerrainHeight(real_x, real_z);
+        }
+    }
+
+    // Now generate blocks using cached heights
+    for (int z = 0; z < CHUNK_D; z++)
+    {
+        for (int x = 0; x < CHUNK_W; x++)
+        {
+            int real_x = x + cx * CHUNK_W;
+            int real_z = z + cz * CHUNK_D;
+            float height = heightCache[z * CHUNK_W + x];
 
             for (int y = 0; y < CHUNK_H; y++)
             {
                 int real_y = y + cy * CHUNK_H;
-                blockIds[(y * CHUNK_D  + z) * CHUNK_W + x] = WorldGenerator::getBlockType(real_x, real_y, real_z);
+
+                // Inline getBlockType logic to avoid function call with redundant height computation
+                unsigned int id;
+
+                if (real_y > height)
+                {
+                    // Above terrain
+                    if (real_y < 64)
+                        id = blocks::WATER_BLOCK->id;
+                    else
+                        id = blocks::AIR_BLOCK->id;
+                }
+                else if (real_y > height - 1)
+                {
+                    // Surface layer
+                    if (real_y > 90)
+                        id = blocks::SNOW_BLOCK->id;
+                    else if (real_y > 80)
+                        id = blocks::COBBLESTONE_BLOCK->id;
+                    else
+                        id = blocks::GRASS_BLOCK->id;
+                }
+                else if (real_y > height - 4)
+                {
+                    // Dirt layer
+                    id = blocks::DIRT_BLOCK->id;
+                }
+                else
+                {
+                    // Deep stone
+                    id = blocks::COBBLESTONE_BLOCK->id;
+                }
+
+                blockIds[(y * CHUNK_D + z) * CHUNK_W + x] = id;
             }
         }
     }
