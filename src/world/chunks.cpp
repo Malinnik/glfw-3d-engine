@@ -14,7 +14,9 @@ Chunks::Chunks(int w, int h, int d, int ox, int oy, int oz) : w(w), h(h), d(d), 
 
 	for (size_t i = 0; i < volume; i++){
 		chunks[i] = nullptr;
+		chunksSecond[i] = nullptr;
 		meshes[i] = nullptr;
+		meshesSecond[i] = nullptr;
 	}
 }
 
@@ -263,8 +265,8 @@ bool Chunks::loadVisible()
 	int nearZ = 0;
 	int minDistance = 1000000000;
 	for (unsigned int y = 0; y < h; y++){
-		for (unsigned int z = 1; z < d-1; z++){
-			for (unsigned int x = 1; x < w-1; x++){
+		for (unsigned int z = 0; z < d; z++){
+			for (unsigned int x = 0; x < w; x++){
 				int index = (y * d + z) * w + x;
 				Chunk* chunk = chunks[index];
 				if (chunk != nullptr)
@@ -294,6 +296,14 @@ bool Chunks::loadVisible()
 	// }
 
 	chunks[index] = chunk;
+	chunk->modified = true;
+	// Mark adjacent chunks as modified so their meshes update
+	if (Chunk* adj = getChunk(nearX+ox-1, nearY+oy, nearZ+oz)) adj->modified = true;
+	if (Chunk* adj = getChunk(nearX+ox+1, nearY+oy, nearZ+oz)) adj->modified = true;
+	if (Chunk* adj = getChunk(nearX+ox, nearY+oy-1, nearZ+oz)) adj->modified = true;
+	if (Chunk* adj = getChunk(nearX+ox, nearY+oy+1, nearZ+oz)) adj->modified = true;
+	if (Chunk* adj = getChunk(nearX+ox, nearY+oy, nearZ+oz-1)) adj->modified = true;
+	if (Chunk* adj = getChunk(nearX+ox, nearY+oy, nearZ+oz+1)) adj->modified = true;
 	// Lighting::onChunkLoaded(ox+nearX, oy+nearY, oz+nearZ);
 	return true;
 }
@@ -304,8 +314,8 @@ bool Chunks::_buildMeshes(BlockRenderer* renderer) {
 	int nearZ = 0;
 	int minDistance = 1000000000;
 	for (unsigned int y = 0; y < h; y++){
-		for (unsigned int z = 1; z < d-1; z++){
-			for (unsigned int x = 1; x < w-1; x++){
+		for (unsigned int z = 0; z < d; z++){
+			for (unsigned int x = 0; x < w; x++){
 				int index = (y * d + z) * w + x;
 				Chunk* chunk = chunks[index];
 				if (chunk == nullptr)
