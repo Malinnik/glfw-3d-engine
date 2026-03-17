@@ -290,7 +290,7 @@ bool Chunks::loadVisible()
 	
 	chunk = new Chunk(nearX+ox,nearY+oy,nearZ+oz);
 	// if (!worldFiles->getChunk(chunk->x, chunk->z, (char*)chunk->voxels)){
-	WorldGenerator::generate_v2(chunk->blocksIds, chunk->x, chunk->y, chunk->z);
+	WorldGenerator::generate(chunk->blocksIds, chunk->x, chunk->y, chunk->z);
 	// }
 
 	chunks[index] = chunk;

@@ -20,15 +20,12 @@ World::World()
     camera = new Camera(vec3(32, 32, 32), radians(70.0f));
     crosshair = new Crosshair();
 
-    
+
     chunks = new Chunks(16*4,1,16*4, 0,0,0);
     // chunks = new Chunks(5,3,5);
-    meshes = new Mesh*[chunks->volume];
-    for (size_t i = 0; i < chunks->volume; i++)
-        meshes[i] = nullptr;
 
     inputLoop = new InputLoop(camera, chunks);
-    
+
 }
 
 World::~World()
@@ -38,7 +35,6 @@ World::~World()
     delete camera;
     delete crosshair;
     delete chunks;
-    delete meshes;
     delete inputLoop;
 }
 
@@ -64,7 +60,7 @@ void World::draw()
         Chunk* chunk = chunks->chunks[i];
         if (chunk == nullptr)
             continue;
-        Mesh* mesh = meshes[i];
+        Mesh* mesh = chunks->meshes[i];
         if (mesh == nullptr)
             continue;
         model = glm::translate(mat4(1.0f), vec3(chunk->x*CHUNK_W+0.5f, chunk->y*CHUNK_H+0.5f, chunk->z*CHUNK_D+0.5f));
@@ -84,8 +80,8 @@ void World::reRenderChunks(){
         if (!chunk->modified)
             continue;
         chunk->modified = false;
-        if (meshes[i] != nullptr)
-            delete meshes[i];
+        if (chunks->meshes[i] != nullptr)
+            delete chunks->meshes[i];
 
         for (int i = 0; i < 27; i++)
             closes[i] = nullptr;
@@ -105,6 +101,6 @@ void World::reRenderChunks(){
             closes[(oy * 3 + oz) * 3 + ox] = other;
         }
         Mesh* mesh = blockRenderer.render(chunk, (const Chunk**)closes);
-        meshes[i] = mesh;
+        chunks->meshes[i] = mesh;
     }
 }

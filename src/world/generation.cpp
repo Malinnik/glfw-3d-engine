@@ -134,7 +134,7 @@ void WorldGenerator::generate_v2(unsigned int* blockIds, int cx, int cy, int cz)
 			for (int y = 0; y < CHUNK_H; y++){
 				int real_y = y + cy * CHUNK_H;
 				float noise = height;
-				int id = noise / std::fmax(0.01f, real_y*0.1f + 0.1f) > 0.1f;
+				int id = (noise / std::fmax(0.01f, real_y*0.1f + 0.1f)) > 0.1f ? 1 : 0;
 				if (real_y <= 2)
 					id = 2;
 
