@@ -16,8 +16,8 @@ World::World()
     shader = new Shader("./assets/shaders/block.vert", "./assets/shaders/block.frag");
     texture = Atlas::textureAtlas;
     // texture = load_texture("./assets/images/TextureAtlas.png");
-    // int playerY = WorldGenerator::getTerrainHeight(20, 20);
-    camera = new Camera(vec3(32, 32, 32), radians(70.0f));
+    int playerY = WorldGenerator::getTerrainHeight(20, 20);
+    camera = new Camera(vec3(20, playerY + 4, 20), radians(70.0f));
     crosshair = new Crosshair();
 
 

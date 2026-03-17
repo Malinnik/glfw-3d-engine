@@ -111,11 +111,11 @@ void WorldGenerator::generate(unsigned int* blockIds, int cx, int cy, int cz)
         for (int x = 0; x < CHUNK_W; x++)
         {
             int real_x = x + cx * CHUNK_W;
-            int real_z = z + cx * CHUNK_D;
-            int real_y = WorldGenerator::getTerrainHeight(real_x, real_z);
+            int real_z = z + cz * CHUNK_D;
 
             for (int y = 0; y < CHUNK_H; y++)
             {
+                int real_y = y + cy * CHUNK_H;
                 blockIds[(y * CHUNK_D  + z) * CHUNK_W + x] = WorldGenerator::getBlockType(real_x, real_y, real_z);
             }
         }
