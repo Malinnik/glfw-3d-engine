@@ -21,8 +21,15 @@ Chunks::Chunks(int w, int h, int d, int ox, int oy, int oz) : w(w), h(h), d(d), 
 Chunks::~Chunks()
 {
     for (size_t i = 0; i < volume; i++)
-        delete chunks[i];    
+	{
+        delete chunks[i];  
+		// delete meshes[i];
+		// delete meshesSecond[i];
+
+	}
     delete[] chunks;
+	// delete[] meshes;
+	// delete[] meshesSecond;
 }
 
 blocks::Block* Chunks::get(int x, int y, int z)
@@ -48,6 +55,9 @@ blocks::Block* Chunks::get(int x, int y, int z)
 }
 
 Chunk* Chunks::getChunk(int x, int y, int z){
+	x -= ox;
+	y -= oy;
+	z -= oz;
 	if (x < 0 || y < 0 || z < 0 || x >= w || y >= h || z >= d)
 		return nullptr;
 	return chunks[(y * d + z) * w + x];
@@ -278,9 +288,9 @@ bool Chunks::loadVisible()
 	if (chunk != nullptr)
 		return false;
 	
-		chunk = new Chunk(nearX+ox,nearY+oy,nearZ+oz);
+	chunk = new Chunk(nearX+ox,nearY+oy,nearZ+oz);
 	// if (!worldFiles->getChunk(chunk->x, chunk->z, (char*)chunk->voxels)){
-		WorldGenerator::generate(chunk->blocksIds, chunk->x, chunk->y, chunk->z);
+	WorldGenerator::generate_v2(chunk->blocksIds, chunk->x, chunk->y, chunk->z);
 	// }
 
 	chunks[index] = chunk;

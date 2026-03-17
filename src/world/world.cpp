@@ -16,12 +16,12 @@ World::World()
     shader = new Shader("./assets/shaders/block.vert", "./assets/shaders/block.frag");
     texture = Atlas::textureAtlas;
     // texture = load_texture("./assets/images/TextureAtlas.png");
-    int playerY = WorldGenerator::getTerrainHeight(20, 20);
-    camera = new Camera(vec3(20, playerY + 4, 20), radians(70.0f));
+    // int playerY = WorldGenerator::getTerrainHeight(20, 20);
+    camera = new Camera(vec3(32, 32, 32), radians(70.0f));
     crosshair = new Crosshair();
 
     
-    chunks = new Chunks(16,1,16, 0,0,0);
+    chunks = new Chunks(16*4,1,16*4, 0,0,0);
     // chunks = new Chunks(5,3,5);
     meshes = new Mesh*[chunks->volume];
     for (size_t i = 0; i < chunks->volume; i++)
@@ -47,11 +47,11 @@ void World::draw()
     // reRenderChunks();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    inputLoop->inputLoop();
+    
     chunks->setCenter(camera->position.x, camera->position.y, camera->position.z);
     chunks->_buildMeshes(&blockRenderer);
     chunks->loadVisible();
-    
-    inputLoop->inputLoop();
 
     shader->use();
     // ensure texture unit 0 active and sampler points to it
