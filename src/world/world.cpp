@@ -21,7 +21,7 @@ World::World()
     crosshair = new Crosshair();
 
 
-    chunks = new Chunks(16*4,1,16*4, 0,0,0);
+    chunks = new Chunks(16*2,8,16*2, 0,0,0);
     // chunks = new Chunks(5,3,5);
 
     inputLoop = new InputLoop(camera, chunks);
