@@ -16,7 +16,6 @@ class World{
     Crosshair* crosshair;
 
     Chunks* chunks;
-    Mesh** meshes;
 
     InputLoop* inputLoop;
     BlockRenderer blockRenderer = BlockRenderer(size_t(1024*1024*8));

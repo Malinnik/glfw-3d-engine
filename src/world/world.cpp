@@ -6,6 +6,7 @@
 
 #include "blocks/blocks.h"
 #include "graphics/atlas.h"
+#include "world/generation.h"
 
 World::World()
 {
@@ -15,18 +16,16 @@ World::World()
     shader = new Shader("./assets/shaders/block.vert", "./assets/shaders/block.frag");
     texture = Atlas::textureAtlas;
     // texture = load_texture("./assets/images/TextureAtlas.png");
-    camera = new Camera(vec3(20,15,20), radians(70.0f));
+    int playerY = WorldGenerator::getTerrainHeight(20, 20);
+    camera = new Camera(vec3(20, playerY + 4, 20), radians(70.0f));
     crosshair = new Crosshair();
 
-    
-    chunks = new Chunks(10,6,10);
+
+    chunks = new Chunks(16*4,1,16*4, 0,0,0);
     // chunks = new Chunks(5,3,5);
-    meshes = new Mesh*[chunks->volume];
-    for (size_t i = 0; i < chunks->volume; i++)
-        meshes[i] = nullptr;
 
     inputLoop = new InputLoop(camera, chunks);
-    
+
 }
 
 World::~World()
@@ -36,16 +35,19 @@ World::~World()
     delete camera;
     delete crosshair;
     delete chunks;
-    delete meshes;
     delete inputLoop;
 }
 
 void World::draw()
 {
-    reRenderChunks();
+    // reRenderChunks();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     inputLoop->inputLoop();
+    
+    chunks->setCenter(camera->position.x, camera->position.y, camera->position.z);
+    chunks->_buildMeshes(&blockRenderer);
+    chunks->loadVisible();
 
     shader->use();
     // ensure texture unit 0 active and sampler points to it
@@ -56,7 +58,11 @@ void World::draw()
     mat4 model(1.0f);
     for (size_t i = 0; i < chunks->volume; i++){
         Chunk* chunk = chunks->chunks[i];
-        Mesh* mesh = meshes[i];
+        if (chunk == nullptr)
+            continue;
+        Mesh* mesh = chunks->meshes[i];
+        if (mesh == nullptr)
+            continue;
         model = glm::translate(mat4(1.0f), vec3(chunk->x*CHUNK_W+0.5f, chunk->y*CHUNK_H+0.5f, chunk->z*CHUNK_D+0.5f));
         shader->uniformMatrix("model", model);
         mesh->draw(GL_TRIANGLES);
@@ -74,8 +80,8 @@ void World::reRenderChunks(){
         if (!chunk->modified)
             continue;
         chunk->modified = false;
-        if (meshes[i] != nullptr)
-            delete meshes[i];
+        if (chunks->meshes[i] != nullptr)
+            delete chunks->meshes[i];
 
         for (int i = 0; i < 27; i++)
             closes[i] = nullptr;
@@ -95,6 +101,6 @@ void World::reRenderChunks(){
             closes[(oy * 3 + oz) * 3 + ox] = other;
         }
         Mesh* mesh = blockRenderer.render(chunk, (const Chunk**)closes);
-        meshes[i] = mesh;
+        chunks->meshes[i] = mesh;
     }
 }
