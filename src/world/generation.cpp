@@ -6,8 +6,10 @@
 #include <iostream>
 
 #include "blocks/blocks.h"
+#include "blocks/block.h"
+#include "world/chunk.h"
 
-float WorldGeneration::getTerrainHeight(int x, int y, int z)
+float WorldGenerator::getTerrainHeight(int x, int z)
 {
     float height = 0.0f;
 
@@ -19,7 +21,7 @@ float WorldGeneration::getTerrainHeight(int x, int y, int z)
     float freq = baseFrequency;
     float amp = amplitude;
 
-    int seed = WorldGeneration::randomSeed();
+    int seed = WorldGenerator::randomSeed();
 
     for (int i = 0; i < octaves; i++)
     {
@@ -36,7 +38,7 @@ float WorldGeneration::getTerrainHeight(int x, int y, int z)
     return height;
 }
 
-inline float WorldGeneration::getBiomeAdjustedHeight(int x, int y, int z) {
+inline float WorldGenerator::getBiomeAdjustedHeight(int x, int y, int z) {
     // Шум для определения биома (низкая частота)
     glm::vec2 biomeCoord(x * 0.001f, z * 0.001f);
     float biomeNoise = glm::perlin(biomeCoord);
@@ -77,9 +79,9 @@ inline float WorldGeneration::getBiomeAdjustedHeight(int x, int y, int z) {
     return height;
 }
 
-int WorldGeneration::getBlockType(int x, int y, int z)
+int WorldGenerator::getBlockType(int x, int y, int z)
 {
-    float height = WorldGeneration::getTerrainHeight(x, y, z);
+    float height = WorldGenerator::getTerrainHeight(x, z);
     
     if (y > height) {
         // Над поверхностью
@@ -102,8 +104,98 @@ int WorldGeneration::getBlockType(int x, int y, int z)
     }
 }
 
+void WorldGenerator::generate(unsigned int* blockIds, int cx, int cy, int cz)
+{
+    // Pre-compute heights for all X,Z columns to avoid redundant calls
+    // getTerrainHeight is expensive (6 octaves of perlin noise)
+    float heightCache[CHUNK_W * CHUNK_D];
 
-int WorldGeneration::randomSeed()
+    for (int z = 0; z < CHUNK_D; z++)
+    {
+        for (int x = 0; x < CHUNK_W; x++)
+        {
+            int real_x = x + cx * CHUNK_W;
+            int real_z = z + cz * CHUNK_D;
+            heightCache[z * CHUNK_W + x] = WorldGenerator::getTerrainHeight(real_x, real_z);
+        }
+    }
+
+    // Now generate blocks using cached heights
+    for (int z = 0; z < CHUNK_D; z++)
+    {
+        for (int x = 0; x < CHUNK_W; x++)
+        {
+            int real_x = x + cx * CHUNK_W;
+            int real_z = z + cz * CHUNK_D;
+            float height = heightCache[z * CHUNK_W + x];
+
+            for (int y = 0; y < CHUNK_H; y++)
+            {
+                int real_y = y + cy * CHUNK_H;
+
+                // Inline getBlockType logic to avoid function call with redundant height computation
+                unsigned int id;
+
+                if (real_y > height)
+                {
+                    // Above terrain
+                    if (real_y < 64)
+                        id = blocks::WATER_BLOCK->id;
+                    else
+                        id = blocks::AIR_BLOCK->id;
+                }
+                else if (real_y > height - 1)
+                {
+                    // Surface layer
+                    if (real_y > 90)
+                        id = blocks::SNOW_BLOCK->id;
+                    else if (real_y > 80)
+                        id = blocks::COBBLESTONE_BLOCK->id;
+                    else
+                        id = blocks::GRASS_BLOCK->id;
+                }
+                else if (real_y > height - 4)
+                {
+                    // Dirt layer
+                    id = blocks::DIRT_BLOCK->id;
+                }
+                else
+                {
+                    // Deep stone
+                    id = blocks::COBBLESTONE_BLOCK->id;
+                }
+
+                blockIds[(y * CHUNK_D + z) * CHUNK_W + x] = id;
+            }
+        }
+    }
+}
+
+void WorldGenerator::generate_v2(unsigned int* blockIds, int cx, int cy, int cz){
+	for (int z = 0; z < CHUNK_D; z++){
+		for (int x = 0; x < CHUNK_W; x++){
+			int real_x = x + cx * CHUNK_W;
+			int real_z = z + cz * CHUNK_D;
+			float height = glm::perlin(glm::vec3(real_x*0.0125f,real_z*0.0125f, 0.0f));
+			height += glm::perlin(glm::vec3(real_x*0.025f,real_z*0.025f, 0.0f))*0.5f;
+			height *= 0.1f;
+			height += 0.05f;
+			for (int y = 0; y < CHUNK_H; y++){
+				int real_y = y + cy * CHUNK_H;
+				float noise = height;
+				int id = (noise / std::fmax(0.01f, real_y*0.1f + 0.1f)) > 0.1f ? 1 : 0;
+				if (real_y <= 2)
+					id = 2;
+
+				if (id == 0 && real_y == 14 && height <= 0.01f)
+					id = 1;
+				blockIds[(y * CHUNK_D + z) * CHUNK_W + x] = id;
+			}
+		}
+	}
+}
+
+int WorldGenerator::randomSeed()
 {
     std::random_device dev;
     std::mt19937 rng(dev());

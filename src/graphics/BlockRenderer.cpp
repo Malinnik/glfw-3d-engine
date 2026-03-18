@@ -1,6 +1,7 @@
 #include "BlockRenderer.h"
 #include "graphics/mesh.h"
 #include "blocks/block.h"
+#include "blocks/blocks.h"
 
 #define VERTEX_SIZE (3 + 2 + 1)
 
@@ -11,7 +12,24 @@
 #define GET_CHUNK(X,Y,Z) (chunks[((CDIV(Y, CHUNK_H)+1) * 3 + CDIV(Z, CHUNK_D) + 1) * 3 + CDIV(X, CHUNK_W) + 1])
 
 #define BLOCK(X,Y,Z) (blocks::get(GET_CHUNK(X,Y,Z)->blocksIds[(LOCAL(Y, CHUNK_H) * CHUNK_D + LOCAL(Z, CHUNK_D)) * CHUNK_W + LOCAL(X, CHUNK_W)]))
-#define IS_BLOCKED(X,Y,Z) ((!IS_CHUNK(X, Y, Z)) || BLOCK(X, Y, Z)->id)
+
+
+#define IS_TRANSPARENT(block_id) \
+    ((block_id) == blocks::AIR_BLOCK->id || \
+     (block_id) == blocks::WATER_BLOCK->id)
+
+// Проверка, нужно ли рендерить грань
+#define SHOULD_RENDER_FACE(current_block, neighbor_block) \
+    ((neighbor_block)->id == blocks::AIR_BLOCK->id || \
+     ((neighbor_block)->id == blocks::WATER_BLOCK->id && \
+      (current_block)->id != blocks::WATER_BLOCK->id))
+
+// Финальный макрос
+#define IS_BLOCKED(X,Y,Z) \
+    (!IS_CHUNK(X, Y, Z) ? \
+        (block->id != blocks::WATER_BLOCK->id) \
+    : \
+        !SHOULD_RENDER_FACE(block, BLOCK(X, Y, Z)))
 
 #define VERTEX(INDEX, X,Y,Z, U,V, L) buffer[INDEX+0] = (X);\
 								  buffer[INDEX+1] = (Y);\
