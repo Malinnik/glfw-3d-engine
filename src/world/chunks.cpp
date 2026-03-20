@@ -25,13 +25,13 @@ Chunks::~Chunks()
     for (size_t i = 0; i < volume; i++)
 	{
         delete chunks[i];  
-		// delete meshes[i];
-		// delete meshesSecond[i];
+		delete meshes[i];
+		delete meshesSecond[i];
 
 	}
     delete[] chunks;
-	// delete[] meshes;
-	// delete[] meshesSecond;
+	delete[] meshes;
+	delete[] meshesSecond;
 }
 
 blocks::Block* Chunks::get(int x, int y, int z)
