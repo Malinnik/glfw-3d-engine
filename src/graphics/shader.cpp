@@ -34,9 +34,10 @@ Shader::Shader() {
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
+    LOG_F(INFO, fmt::format("VERTEX SHADER:: {}", vertexPath, fragmentPath).c_str());
+    LOG_F(INFO, fmt::format("FRAGMENT SHADER:: {}\n", vertexPath, fragmentPath).c_str());
     std::string vertexCode = FileReader::readText(vertexPath);
     std::string fragmentCode = FileReader::readText(fragmentPath);
-
     compileShader(vertexCode.c_str(), fragmentCode.c_str());
 }
 
@@ -63,10 +64,10 @@ void Shader::uniformInt(const std::string& name, int value)
 
 void Shader::compileShader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
 {
-    LOG_F(INFO, "--------------------------- COMPILING SHADERS -------------------------------");
-    LOG_F(INFO, fmt::format("\n ------ VERTEX SHADER ------\n {} \n\n", vertexShaderSource).c_str());
-    LOG_F(INFO, fmt::format("\n ------ FRAGMENT SHADER ------\n {} \n\n", fragmentShaderSource).c_str());
-    // Загрузка и компиляция шейдеров
+    LOG_F(1, "--------------------------- COMPILING SHADERS -------------------------------");
+    LOG_F(1, fmt::format("\n ------ VERTEX SHADER ------\n {} \n\n", vertexShaderSource).c_str());
+    LOG_F(1, fmt::format("\n ------ FRAGMENT SHADER ------\n {} \n\n", fragmentShaderSource).c_str());
+    // Загр`узка и компиляция шейдеров
     const char* vShaderCode = vertexShaderSource.c_str();
     const char* fShaderCode = fragmentShaderSource.c_str();
 
