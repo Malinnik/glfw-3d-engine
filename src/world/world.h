@@ -19,11 +19,13 @@ class World{
 
     InputLoop* inputLoop;
     BlockRenderer blockRenderer = BlockRenderer(size_t(1024*1024*8));
+    WorldFiles worldFiles = WorldFiles("./world/", size_t(24*1024*1024));
 
     public:
         World();
         ~World();
 
         void draw();
+        void save();
         void reRenderChunks();
 };

@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "blocks/block.h"
 #include "graphics/BlockRenderer.h"
+#include "files/WorldFiles.h"
 
 using namespace glm;
 
@@ -33,6 +34,6 @@ class Chunks {
         void setCenter(int x, int y, int z);
         void translate(int dx, int dy, int dz);
 
-        bool loadVisible();
+        bool loadVisible(WorldFiles *worldFiles);
         bool _buildMeshes(BlockRenderer *renderer);
 };

@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   
+  LOG_F(INFO, "Starting world draw cycle");
   while (!window.isShouldClose()) {
     window.render();
     
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]) {
     window.swapBuffers();
     events.pullEvents();
   }
-
+  LOG_F(INFO, "Detected app closing");
+  world->save();
   return 0;
 }

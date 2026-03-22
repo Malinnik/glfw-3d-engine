@@ -259,7 +259,7 @@ void Chunks::translate(int dx, int dy, int dz)
 	oz += dz;
 }
 
-bool Chunks::loadVisible()
+bool Chunks::loadVisible(WorldFiles *worldFiles)
 {
 	int nearX = 0;
 	int nearY = 0;
@@ -295,9 +295,8 @@ bool Chunks::loadVisible()
 		return false;
 	
 	chunk = new Chunk(nearX+ox,nearY+oy,nearZ+oz);
-	// if (!worldFiles->getChunk(chunk->x, chunk->z, (char*)chunk->voxels)){
-	WorldGenerator::generate(chunk->blocksIds, chunk->x, chunk->y, chunk->z);
-	// }
+	if (!worldFiles->getChunk(chunk->x, chunk->y, chunk->z, (char*)chunk->blocksIds))
+		WorldGenerator::generate(chunk->blocksIds, chunk->x, chunk->y, chunk->z);
 
 	chunks[index] = chunk;
 	chunk->modified = true;

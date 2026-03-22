@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
+#include <loguru.hpp>
 
 #include "blocks/blocks.h"
 #include "graphics/atlas.h"
@@ -47,7 +48,7 @@ void World::draw()
     
     chunks->setCenter(camera->position.x, camera->position.y, camera->position.z);
     chunks->_buildMeshes(&blockRenderer);
-    chunks->loadVisible();
+    chunks->loadVisible(&worldFiles);
 
     shader->use();
     // ensure texture unit 0 active and sampler points to it
@@ -70,6 +71,17 @@ void World::draw()
 
     crosshair->draw();
 
+}
+
+void World::save(){
+    LOG_F(INFO, "Saving world...");
+    for (unsigned int i = 0; i < chunks->volume; i++){
+		Chunk* chunk = chunks->chunks[i];
+		if (chunk == nullptr)
+			continue;
+        worldFiles.put((const char*)chunk->blocksIds, chunk->x, chunk->y, chunk->z);
+	}
+    worldFiles.write();
 }
 
 
