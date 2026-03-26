@@ -170,7 +170,7 @@ bool WorldFiles::getChunk(int x, int y, int z, char* out) {
         char* chunk = it->second[chunkIndex];
         if (chunk != nullptr) {
             memcpy(out, chunk, CHUNK_DATA_SIZE);
-            LOG_F(INFO, "Chunk (%d,%d,%d) loaded from memory (region %d,%d,%d)",
+            LOG_F(1, "Chunk (%d,%d,%d) loaded from memory (region %d,%d,%d)",
                   x, y, z, regX, regY, regZ);
             return true;
         }
@@ -179,7 +179,7 @@ bool WorldFiles::getChunk(int x, int y, int z, char* out) {
     // Попытаться прочитать с диска
     bool loaded = readChunk(x, y, z, out);
     if (loaded) {
-        LOG_F(INFO, "Chunk (%d,%d,%d) loaded from disk (region %d,%d,%d)",
+        LOG_F(1, "Chunk (%d,%d,%d) loaded from disk (region %d,%d,%d)",
               x, y, z, regX, regY, regZ);
     }
     return loaded;
