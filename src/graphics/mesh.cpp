@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 
 #include "mesh.h"
+#include "graphics/renderer/opengl/renderer.h"
 
 
 Mesh::Mesh(const float *buffer, size_t vertices, const int *attrs) : vertices(vertices)
@@ -11,43 +12,21 @@ Mesh::Mesh(const float *buffer, size_t vertices, const int *attrs) : vertices(ve
     {
         vertexSize += attrs[i];
     }
-
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexSize * vertices, buffer, GL_STATIC_DRAW);
-
-    int offset = 0;
-    for (int i = 0; attrs[i]; i++)
-    {
-        int size = attrs[i];
-        glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, sizeof(float)*vertexSize, (GLvoid*)(offset*sizeof(float)));
-        glEnableVertexAttribArray(i);
-        offset += size;
-    }
-
-    glBindVertexArray(0);
+    renderer::opengl::Mesh::create(buffer, vertices, attrs, vao, vbo, vertexSize);
 }
 
 Mesh::~Mesh()
 {
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
+    renderer::opengl::Mesh::del(vao, vbo);
 }
 
 void Mesh::reload(const float *buffer, size_t vertices)
 {
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexSize * vertices, buffer, GL_STATIC_DRAW);
+    renderer::opengl::Mesh::reload(buffer, vertices, vao, vbo, vertexSize);
     this->vertices = vertices;
 }
 
 void Mesh::draw(unsigned int primitive)
 {
-    glBindVertexArray(vao);
-    glDrawArrays(primitive, 0, vertices);
-    glBindVertexArray(0);
+    renderer::opengl::Mesh::draw(primitive, vao, vertices);
 }

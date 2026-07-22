@@ -19,5 +19,4 @@ public:
 private:
     GLuint ID;
     void compileShader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource);
-    void checkCompileErrors(GLuint shader, std::string type);
 };

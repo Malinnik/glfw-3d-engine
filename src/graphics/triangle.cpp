@@ -28,7 +28,6 @@ void Triangle::setupMesh() {
 
 void Triangle::draw(Camera* camera) {
     glm::mat4 model(1.0f);
-    // model = glm::translate(model, glm::vec3(0.5f, 0, 0));
     shader->uniformMatrix("model", model);
     shader->uniformMatrix("projview", camera->getProjection()*camera->getView());
     shader->use();

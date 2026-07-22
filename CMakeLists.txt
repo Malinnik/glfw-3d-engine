@@ -46,6 +46,7 @@ file(GLOB_RECURSE CORE_SRC
     "src/engine/resources/*.cpp"
     "src/files/*.cpp"
     "src/graphics/*.cpp"
+    "src/graphics/renderer/opengl/*.cpp"
     "src/loaders/*.cpp"
     "src/ui/*.cpp"
     "src/window/*.cpp"

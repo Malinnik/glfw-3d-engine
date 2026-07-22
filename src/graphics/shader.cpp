@@ -8,6 +8,7 @@
 
 #include "files/file.h"
 #include "shader.h"
+#include "graphics/renderer/opengl/renderer.h"
 
 // Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource) {
 //     compileShader(vertexShaderSource, fragmentShaderSource);
@@ -42,24 +43,21 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 }
 
 Shader::~Shader() {
-    glDeleteProgram(ID);
+    renderer::opengl::GLShader::del(ID);
 }
 
 void Shader::use() {
-    glUseProgram(ID);
+    renderer::opengl::GLShader::use(ID);
 }
 
 void Shader::uniformMatrix(std::string name, glm::mat4 matrix)
 {
-    GLuint transformLoc = glGetUniformLocation(ID, name.c_str());
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(matrix));
+    renderer::opengl::GLShader::uniformMatrix(name.c_str(), matrix, ID);
 }
 
 void Shader::uniformInt(const std::string& name, int value)
 {
-    GLint loc = glGetUniformLocation(ID, name.c_str());
-    if (loc >= 0)
-        glUniform1i(loc, value);
+    renderer::opengl::GLShader::uniformInt(name.c_str(), value, ID);
 }
 
 void Shader::compileShader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
@@ -67,52 +65,7 @@ void Shader::compileShader(const std::string& vertexShaderSource, const std::str
     LOG_F(1, "--------------------------- COMPILING SHADERS -------------------------------");
     LOG_F(1, fmt::format("\n ------ VERTEX SHADER ------\n {} \n\n", vertexShaderSource).c_str());
     LOG_F(1, fmt::format("\n ------ FRAGMENT SHADER ------\n {} \n\n", fragmentShaderSource).c_str());
-    // Загр`узка и компиляция шейдеров
-    const char* vShaderCode = vertexShaderSource.c_str();
-    const char* fShaderCode = fragmentShaderSource.c_str();
-
-    GLuint vertex, fragment;
-    int success;
-    char infoLog[512];
-
-    // Вершинный шейдер
-    vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vShaderCode, NULL);
-    glCompileShader(vertex);
-    checkCompileErrors(vertex, "VERTEX");
-
-    // Фрагментный шейдер
-    fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fShaderCode, NULL);
-    glCompileShader(fragment);
-    checkCompileErrors(fragment, "FRAGMENT");
-
-    // Шейдерная программа
-    ID = glCreateProgram();
-    glAttachShader(ID, vertex);
-    glAttachShader(ID, fragment);
-    glLinkProgram(ID);
-    checkCompileErrors(ID, "PROGRAM");
-
-    // Удаляем шейдеры, так как они уже связаны с программой и больше не нужны
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
-}
-
-void Shader::checkCompileErrors(GLuint shader, std::string type) {
-    GLint success;
-    GLchar infoLog[1024];
-    if (type != "PROGRAM") {
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            LOG_F(ERROR, fmt::format("ERROR::SHADER_COMPILATION_ERROR of type:  {} \n {} \n -- --------------------------------------------------- -- \n", type, infoLog).c_str());
-        }
-    } else {
-        glGetProgramiv(shader, GL_LINK_STATUS, &success);
-        if (!success) {
-            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            LOG_F(ERROR, fmt::format("ERROR::PROGRAM_LINKING_ERROR of type:  {} \n {} \n -- --------------------------------------------------- -- \n", type, infoLog).c_str());
-        }
-    }
+    
+    // Загрузка и компиляция шейдеров
+    ID = renderer::opengl::GLShader::compile(vertexShaderSource.c_str(), fragmentShaderSource.c_str());
 }
