@@ -9,6 +9,7 @@
 #include "window/window.h"
 #include "window/events.h"
 #include "world/world.h"
+#include "world/WorldManager.h"
 #include "ui/gui.h"
 
 int main(int argc, char *argv[]) {
@@ -24,8 +25,9 @@ int main(int argc, char *argv[]) {
   Events events(Window::window);
   imgui gui(Window::window);
 
-  World* world = new World();
-
+  auto& worldManager = WorldManager::instace();
+  worldManager.createWorld<World>();
+  
   glClearColor(0.6f,0.62f,0.65f,1);
   glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -36,13 +38,13 @@ int main(int argc, char *argv[]) {
   while (!window.isShouldClose()) {
     window.render();
     
-    world->draw();
+    worldManager.getActiveWorld()->draw();
 
     gui.loop();
     window.swapBuffers();
     events.pullEvents();
   }
   LOG_F(INFO, "Detected app closing");
-  world->save();
+  worldManager.gracefulShutdown();
   return 0;
 }
