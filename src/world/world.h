@@ -4,7 +4,7 @@
 #include "graphics/texture.h"
 #include "graphics/mesh.h"
 #include "graphics/BlockRenderer.h"
-#include "engine/camera.h"
+#include "engine/camera/camera.h"
 #include "engine/crosshair.h"
 #include "engine/InputLoop.h"
 #include "world/chunks.h"

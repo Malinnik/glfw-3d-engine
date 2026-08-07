@@ -22,6 +22,7 @@ class Camera {
         float speed = 10.0f;
         
         Camera(vec3 position, float fov);
+        ~Camera();
 
         void rotate(float x, float y, float z);
         mat4 getProjection();

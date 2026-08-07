@@ -44,6 +44,7 @@ file(GLOB_RECURSE CORE_SRC
     "src/*.cpp"
     "src/engine/*.cpp"
     "src/engine/resources/*.cpp"
+    "src/engine/camera/*.cpp"
     "src/files/*.cpp"
     "src/graphics/*.cpp"
     "src/graphics/renderer/opengl/*.cpp"
@@ -52,6 +53,7 @@ file(GLOB_RECURSE CORE_SRC
     "src/window/*.cpp"
     "src/block/*.cpp"
     "src/world/*.cpp"
+    "src/entities/player/*.cpp"
 )
 
 target_sources(${PROJECT_NAME} PRIVATE ${CORE_SRC})

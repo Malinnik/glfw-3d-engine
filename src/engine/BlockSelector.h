@@ -2,7 +2,7 @@
 
 #include "graphics/LineBatch.h"
 #include "graphics/shader.h"
-#include "engine/camera.h"
+#include "engine/camera/camera.h"
 
 class BlockSelector{
     Camera* camera;

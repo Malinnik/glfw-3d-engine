@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/camera.h"
+#include "engine/camera/camera.h"
 #include "engine/BlockSelector.h"
 #include "window/events.h"
 #include "world/chunks.h"

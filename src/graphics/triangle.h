@@ -6,7 +6,7 @@
 #include <glm/ext.hpp>
 
 #include "engine/transform.h"
-#include "engine/camera.h"
+#include "engine/camera/camera.h"
 #include "graphics/shader.h"
 #include "graphics/mesh.h"
 
