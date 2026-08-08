@@ -24,6 +24,10 @@ run-win:
 	cmake --build ./build
 	./build/Debug/3d-engine.exe
 
+run-win-release:
+	cmake --build ./build --config Release
+	./build/Release/3d-engine.exe
+
 release-win:
 	make release
 	cmake --build ./build --config Release

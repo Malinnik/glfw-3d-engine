@@ -5,9 +5,6 @@
 #include "glm/ext.hpp"
 #include <loguru.hpp>
 
-#include "blocks/blocks.h"
-#include "graphics/atlas.h"
-#include "world/generation.h"
 
 World::World()
 {
@@ -16,16 +13,13 @@ World::World()
 
     shader = new Shader("./assets/shaders/block.vert", "./assets/shaders/block.frag");
     texture = Atlas::textureAtlas;
-    // texture = load_texture("./assets/images/TextureAtlas.png");
     int playerY = WorldGenerator::getTerrainHeight(20, 20);
-    camera = new Camera(vec3(20, playerY + 4, 20), radians(70.0f));
-    crosshair = new Crosshair();
 
+    player = std::make_unique<entity::player::Player>(Transform(0, playerY, 0));
+    chunks = std::make_unique<Chunks>(16*2,8,16*2, 0,0,0);
 
-    chunks = new Chunks(16*2,8,16*2, 0,0,0);
-    // chunks = new Chunks(5,3,5);
-
-    inputLoop = new InputLoop(camera, chunks);
+    CameraManager::instance().pushCamera(player->getCamera());
+    // CameraManager::instance().pushCamera(player.get)
 
 }
 
@@ -33,18 +27,21 @@ World::~World()
 {
     delete shader;
     delete texture;
-    delete camera;
-    delete crosshair;
-    delete chunks;
-    delete inputLoop;
+}
+
+void World::update(float delta)
+{
+    if (player)
+        player->onUpdate(delta);
 }
 
 void World::draw()
 {
-    // reRenderChunks();
+    Camera* camera = CameraManager::instance().getActiveCamera();
+    if (!camera) return;
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    inputLoop->inputLoop();
     
     chunks->setCenter(camera->position.x, camera->position.y, camera->position.z);
     chunks->_buildMeshes(&blockRenderer);
@@ -57,6 +54,7 @@ void World::draw()
     shader->uniformInt("u_texture0", 0);
     shader->uniformMatrix("projview", camera->getProjection()*camera->getView());
     mat4 model(1.0f);
+    // player->onRender();
     for (size_t i = 0; i < chunks->volume; i++){
         Chunk* chunk = chunks->chunks[i];
         if (chunk == nullptr)
@@ -69,7 +67,7 @@ void World::draw()
         mesh->draw(GL_TRIANGLES);
     }
 
-    crosshair->draw();
+    player->onRender();
 
 }
 

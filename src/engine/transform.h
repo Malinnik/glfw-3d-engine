@@ -2,12 +2,10 @@
 #include "glm/vec3.hpp"
 
 class Transform {
-    private:
-        glm::vec3 _position;
-
     public:
         Transform(float x, float y, float z);
         Transform();
+        glm::vec3 position;
 
         void setPosition(float x, float y, float z);
         void setPosition(glm::vec3* position);
