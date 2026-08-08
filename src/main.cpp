@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   Events events(Window::window);
   imgui gui(Window::window);
 
-  auto& worldManager = WorldManager::instace();
+  auto& worldManager = WorldManager::instance();
   worldManager.createWorld<World>();
   
   glClearColor(0.6f,0.62f,0.65f,1);
@@ -35,10 +35,20 @@ int main(int argc, char *argv[]) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   
   LOG_F(INFO, "Starting world draw cycle");
+  float lastTime = glfwGetTime();
   while (!window.isShouldClose()) {
+    float currentTime = glfwGetTime();
+    float delta = currentTime - lastTime;
+    lastTime = currentTime;
+
     window.render();
     
-    worldManager.getActiveWorld()->draw();
+    World* world = worldManager.getActiveWorld();
+    if (world)
+    {
+      world->update(delta);
+      world->draw();
+    }
 
     gui.loop();
     window.swapBuffers();

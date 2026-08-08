@@ -8,7 +8,7 @@
 
 class WorldManager{
     public:
-        static WorldManager& instace() {
+        static WorldManager& instance() {
             static WorldManager worldManager;
             return worldManager;
         }
