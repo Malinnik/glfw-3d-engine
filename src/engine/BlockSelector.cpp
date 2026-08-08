@@ -1,6 +1,7 @@
 #include "BlockSelector.h"
+#include "engine/camera/CameraManager.h"
 
-BlockSelector::BlockSelector(Camera* camera) : camera(camera)
+BlockSelector::BlockSelector()
 {
     shader = new Shader("./assets/shaders/lines.vert", "./assets/shaders/lines.frag");
     lineBatch = new LineBatch(4096);
@@ -14,6 +15,9 @@ BlockSelector::~BlockSelector()
 
 void BlockSelector::draw(int x, int y, int z)
 {
+    Camera* camera = CameraManager::instance().getActiveCamera();
+    if (!camera) return;
+
     float center_x = x + 0.5f;
     float center_y = y + 0.5f;
     float center_z = z + 0.5f;

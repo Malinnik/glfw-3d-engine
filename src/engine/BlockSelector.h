@@ -10,7 +10,7 @@ class BlockSelector{
     LineBatch* lineBatch;
 
     public:
-        BlockSelector(Camera* camera);
+        BlockSelector();
         ~BlockSelector();
 
         void draw(int x, int y, int z);

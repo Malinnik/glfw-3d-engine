@@ -59,6 +59,9 @@ namespace entity {
                 Camera* camera = nullptr;
                 Crosshair* crosshair = nullptr;
                 BlockSelector* blockSelector = nullptr;
+
+                glm::ivec3 targetBlock;
+                bool hasTarget = false;
                 
 
         };

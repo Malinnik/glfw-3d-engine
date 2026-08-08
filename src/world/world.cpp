@@ -67,6 +67,8 @@ void World::draw()
         mesh->draw(GL_TRIANGLES);
     }
 
+    player->onRender();
+
 }
 
 void World::save(){

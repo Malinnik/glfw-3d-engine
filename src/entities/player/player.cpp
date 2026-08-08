@@ -5,7 +5,7 @@ entity::player::Player::Player()
 {
     transform = Transform(0, 30, 0);
     camera = new Camera(transform.position, glm::radians(70.0f));
-    blockSelector = new BlockSelector(camera);
+    blockSelector = new BlockSelector();
     crosshair = new Crosshair();
 }
 
@@ -13,7 +13,7 @@ entity::player::Player::Player(Transform transform)
 {
     this->transform = transform;
     camera = new Camera(transform.position, glm::radians(70.0f));
-    blockSelector = new BlockSelector(camera);
+    blockSelector = new BlockSelector();
     crosshair = new Crosshair();
 
 }
@@ -39,6 +39,8 @@ void entity::player::Player::onUpdate(float delta)
 void entity::player::Player::onRender()
 {
     crosshair->draw();
+    if (hasTarget)
+        blockSelector->draw(targetBlock.x, targetBlock.y, targetBlock.z);
 }
 
 void entity::player::Player::processMovement(float delta)
@@ -109,7 +111,9 @@ void entity::player::Player::processBlockInteraction()
     blocks::Block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
     if (blk != nullptr)
     {
-        blockSelector->draw(iend.x, iend.y, iend.z);
+        targetBlock = glm::ivec3(iend.x, iend.y, iend.z);
+        hasTarget = true;
+        // blockSelector->draw(iend.x, iend.y, iend.z);
 
         if (Events::jClicked(GLFW_MOUSE_BUTTON_1)){
             chunks->set((int)iend.x, (int)iend.y, (int)iend.z, 0);
@@ -117,5 +121,9 @@ void entity::player::Player::processBlockInteraction()
         if (Events::jClicked(GLFW_MOUSE_BUTTON_2)){
             chunks->set((int)(iend.x)+(int)(norm.x), (int)(iend.y)+(int)(norm.y), (int)(iend.z)+(int)(norm.z), 2);
         }
+    }
+    else 
+    {
+        hasTarget = false;
     }
 }

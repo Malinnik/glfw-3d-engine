@@ -38,8 +38,11 @@ class WorldManager{
         }
 
         void setActiveWorld(World* world);
-        void gracefulShutdown();
         World* getActiveWorld() const { return m_activeWorld; }
+        
+        void clearWorlds();
+        void gracefulShutdown();
+        
         
 
     
