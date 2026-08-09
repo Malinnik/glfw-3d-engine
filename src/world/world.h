@@ -34,6 +34,8 @@ class World{
 
         Chunks* getChunks() { return chunks.get(); }
         entity::player::Player* getPlayer() { return player.get(); }
+
+        const float Gravity = 9.8;
     
     private:
         std::unique_ptr<Chunks> chunks;
