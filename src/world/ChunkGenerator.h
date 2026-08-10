@@ -6,6 +6,7 @@
 #include <queue>
 #include <atomic>
 #include "world/chunk.h"
+#include "files/WorldFiles.h"
 
 struct ChunkTask {
     int x, y, z;
@@ -19,7 +20,7 @@ struct ChunkResult {
 
 class ChunkGenerator {
     public:
-        ChunkGenerator();
+        ChunkGenerator(WorldFiles* worldFiles);
         ~ChunkGenerator();
 
         void requestChunk(int x, int y, int z);
@@ -30,6 +31,7 @@ class ChunkGenerator {
 
     private:
         void workerLoop();
+        WorldFiles* m_worldFiles = nullptr;
 
         std::thread m_thread;
         std::queue<ChunkTask> m_taskQueue;

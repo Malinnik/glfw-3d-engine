@@ -246,6 +246,9 @@ void Chunks::translate(int dx, int dy, int dz)
 					continue;
 				Mesh* mesh = meshes[(y * d + z) * w + x];
 				if (nx < 0 || ny < 0 || nz < 0 || nx >= w || ny >= h || nz >= d){
+					if (worldFiles) {
+						worldFiles->put((const char*)chunk->blocksIds, chunk->x, chunk->y, chunk->z);
+					}
 					delete chunk;
 					delete mesh;
 					continue;
@@ -270,14 +273,13 @@ void Chunks::translate(int dx, int dy, int dz)
 
 bool Chunks::loadVisible(WorldFiles *worldFiles)
 {
-	// 1. Поиск ближайшего пустого слота 
-	int nearX = 0, nearY = 0, nearZ = 0;
-    int minDistance = 1000000000;
+    // 1. Собираем все пустые слоты с их квадратом расстояния до центра
+    std::vector<std::pair<int, int>> emptySlots; // pair(расстояние^2, индекс)
     float centerX = (w - 1) * 0.5f;
     float centerY = (h - 1) * 0.5f;
     float centerZ = (d - 1) * 0.5f;
 
-	for (unsigned int y = 0; y < h; y++) {
+    for (unsigned int y = 0; y < h; y++) {
         for (unsigned int z = 0; z < d; z++) {
             for (unsigned int x = 0; x < w; x++) {
                 int index = (y * d + z) * w + x;
@@ -286,38 +288,51 @@ bool Chunks::loadVisible(WorldFiles *worldFiles)
                 float lx = x - centerX;
                 float ly = y - centerY;
                 float lz = z - centerZ;
-                int distance = (int)(lx * lx + ly * ly + lz * lz);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nearX = x;
-                    nearY = y;
-                    nearZ = z;
-                }
+                int distanceSq = (int)(lx * lx + ly * ly + lz * lz);
+                emptySlots.emplace_back(distanceSq, index);
             }
         }
     }
 
-	// 2. Проверка, что слот действительно пуст
-	int index = (nearY * d + nearZ) * w + nearX;
-    if (chunks[index] != nullptr)
+    if (emptySlots.empty())
         return false;
 
-	// 3. Вычисляем мировые координаты чанка
-	int chunkX = nearX + ox;
-    int chunkY = nearY + oy;
-    int chunkZ = nearZ + oz;
-	
-	// 4. Создаём пустой чанк-заглушку и сразу помещаем в массив
-	Chunk* chunk = new Chunk(chunkX, chunkY, chunkZ);   // без генерации
-    chunks[index] = chunk;
+    // 2. Сортируем по возрастанию расстояния (ближайшие первыми)
+    std::sort(emptySlots.begin(), emptySlots.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
 
-	// 5. Отправляем запрос фоновому генератору
-	if (generator) {
-        generator->requestChunk(chunkX, chunkY, chunkZ);
+    // 3. Загружаем до MAX_LOADS_PER_FRAME чанков
+    const int MAX_LOADS_PER_FRAME = 3;
+    int loaded = 0;
+    for (const auto& [dist, idx] : emptySlots) {
+        if (loaded >= MAX_LOADS_PER_FRAME)
+            break;
+
+        if (chunks[idx] != nullptr)
+            continue; // на всякий случай повторная проверка
+
+        // Локальные координаты слота
+        int nx = idx % w;
+        int nz = (idx / w) % d;
+        int ny = idx / (w * d);
+
+        // Мировые координаты чанка
+        int chunkX = nx + ox;
+        int chunkY = ny + oy;
+        int chunkZ = nz + oz;
+
+        // Создаём пустой чанк и сразу занимаем слот
+        Chunk* chunk = new Chunk(chunkX, chunkY, chunkZ);
+        chunks[idx] = chunk;
+
+        // Отправляем запрос на генерацию/загрузку
+        if (generator) {
+            generator->requestChunk(chunkX, chunkY, chunkZ);
+        }
+        loaded++;
     }
 
-	// 6. (Опционально) помечаем соседние чанки как modified, когда чанк будет готов —
-	return true;
+    return loaded > 0;
 }
 
 bool Chunks::_buildMeshes(BlockRenderer* renderer) {

@@ -40,6 +40,6 @@ class World{
     
     private:
         std::unique_ptr<Chunks> chunks;
-        ChunkGenerator chunkGenerator;
+        std::unique_ptr<ChunkGenerator> chunkGenerator;
         std::unique_ptr<entity::player::Player> player;
 };

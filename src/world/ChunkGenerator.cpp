@@ -4,7 +4,7 @@
 #include "fmt/format.h"
 #include "world/generation.h"
 
-ChunkGenerator::ChunkGenerator()
+ChunkGenerator::ChunkGenerator(WorldFiles* worldFiles)
 {
     m_thread = std::thread(&ChunkGenerator::workerLoop, this);
 }
@@ -55,8 +55,18 @@ void ChunkGenerator::workerLoop()
 
         ChunkResult result;
         result.task = task;
-        // LOG_F(INFO, fmt::format("CHUNK_GEN: At {} {} {}", task.x, task.y, task.z).c_str());
-        WorldGenerator::generate(result.blocks, task.x, task.y, task.z);
+        bool loaded = false;
+
+        if (m_worldFiles) 
+            loaded = m_worldFiles->getChunk(task.x, task.y, task.z, reinterpret_cast<char*>(result.blocks));
+            
+        if (!loaded)
+        {
+            // LOG_F(INFO, fmt::format("CHUNK_GEN: At {} {} {}", task.x, task.y, task.z).c_str());
+            WorldGenerator::generate(result.blocks, task.x, task.y, task.z);
+        } 
+        // else LOG_F(INFO, fmt::format("CHUNK_GEN: Loaded {} {} {}", task.x, task.y, task.z).c_str());
+
 
         {
             std::lock_guard<std::mutex> lock(m_mutex);

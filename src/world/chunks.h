@@ -22,6 +22,7 @@ class Chunks {
 
         ChunkGenerator* generator = nullptr;
         std::vector<ChunkResult> pendingChunks;
+        WorldFiles* worldFiles = nullptr;
 
         unsigned int w,h,d;
         int ox, oy, oz;
@@ -45,5 +46,6 @@ class Chunks {
         bool _buildMeshes(BlockRenderer *renderer);
 
         void setGenerator(ChunkGenerator* generator) {this->generator = generator;}
+        void setWorldFiles(WorldFiles* worldFiles) {this->worldFiles = worldFiles;}
         void update();
 };
