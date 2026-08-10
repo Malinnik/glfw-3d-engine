@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include "engine/frustum.h"
 
 using namespace glm;
 
@@ -21,10 +22,13 @@ class Camera {
 
         float speed = 10.0f;
         
+        Frustum frustum;
+
         Camera(vec3 position, float fov);
         ~Camera();
 
         void rotate(float x, float y, float z);
         mat4 getProjection();
         mat4 getView();
+        void updateFrustum();
 };

@@ -35,3 +35,8 @@ mat4 Camera::getProjection(){
 mat4 Camera::getView(){
     return  glm::lookAt(position, position+front, up);
 }
+
+void Camera::updateFrustum()
+{
+    frustum.extractFromMatrix(getProjection() * getView());
+}

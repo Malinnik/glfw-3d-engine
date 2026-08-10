@@ -39,6 +39,7 @@ void World::draw()
 {
     Camera* camera = CameraManager::instance().getActiveCamera();
     if (!camera) return;
+    camera->updateFrustum();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -62,6 +63,14 @@ void World::draw()
         Mesh* mesh = chunks->meshes[i];
         if (mesh == nullptr)
             continue;
+
+        //Отсечение невидимых чанков
+        glm::vec3 chunkMin = glm::vec3(chunk->x * CHUNK_W, chunk->y * CHUNK_H, chunk->z * CHUNK_D);
+        glm::vec3 chunkMax = chunkMin + glm::vec3(CHUNK_W, CHUNK_H, CHUNK_D);
+        if (!camera->frustum.isAABBVisible(chunkMin, chunkMax)) {
+            continue;
+        }
+
         model = glm::translate(mat4(1.0f), vec3(chunk->x*CHUNK_W+0.5f, chunk->y*CHUNK_H+0.5f, chunk->z*CHUNK_D+0.5f));
         shader->uniformMatrix("model", model);
         mesh->draw(GL_TRIANGLES);
