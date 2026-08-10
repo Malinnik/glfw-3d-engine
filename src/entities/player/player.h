@@ -52,7 +52,7 @@ namespace entity {
             bool onGround = false;
 
             float gravity = 9.8f;
-            float jumpStrength = 8.0f;
+            float jumpStrength = 8.7f;
 
             using BlockQueryFunc = std::function<std::vector<glm::ivec3>(const AABB&)>;
             void setBlockQuery(BlockQueryFunc func) { m_blockQuery = func; }
@@ -95,7 +95,7 @@ namespace entity {
                 bool hasTarget = false;
 
                 float eyeHeight = 1.62f;
-                float speed = 10.0f;
+                float speed = 2.0f;
                 
                 
 

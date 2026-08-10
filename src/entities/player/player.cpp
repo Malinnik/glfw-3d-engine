@@ -46,9 +46,10 @@ entity::player::Player::Player(Transform transform)
     blockSelector = new BlockSelector();
     crosshair = new Crosshair();
 
-    World* world = WorldManager::instance().getActiveWorld();
-    if (world)
-        physics.gravity = world->Gravity;
+    // World* world = WorldManager::instance().getActiveWorld();
+    // if (world)
+    //     physics.gravity = world->Gravity;
+    physics.gravity = 32.0f;
     physics.setSize(0.6f, 1.8f);
     physics.setBlockQuery([this](const AABB& box) -> std::vector<glm::ivec3> {
         World* world = WorldManager::instance().getActiveWorld();
@@ -105,7 +106,7 @@ void entity::player::Player::onRender()
 void entity::player::Player::processMovement(float delta)
 {
     // TODO: Move acceleration to other class staff
-    float acceleration = (physics.onGround ? 30 : 10);
+    float acceleration = (physics.onGround ? 50 : 5);
     glm::vec3 moveDir(0.0f);
 
     if (Events::jPressed(GLFW_KEY_TAB))
@@ -132,7 +133,7 @@ void entity::player::Player::processMovement(float delta)
         physics.velocity.z *= (1.0f - 10.0f * delta);
     }
 
-    float maxSpeed = 8.0f;
+    float maxSpeed = 4.0f;
     glm::vec2 horiz(physics.velocity.x, physics.velocity.z);
     if (glm::length(horiz) > maxSpeed)
      {
@@ -152,16 +153,16 @@ void entity::player::Player::processMovement(float delta)
     //     transform.position -= camera->up;
 
 
-    // if (Events::scroll_up){
-    //     // LOG_F(INFO, "Camera speed UP");
-    //     if (speed >= 0)
-    //         speed += 1;
-    // }
-    // if (Events::scroll_down){
-    //     // LOG_F(INFO, "Camera speed DOWN");
-    //     if (speed > 1) 
-    //         speed -= 1;
-    // }
+    if (Events::scroll_up){
+        // LOG_F(INFO, "Camera speed UP");
+        if (speed >= 0)
+            speed += 1;
+    }
+    if (Events::scroll_down){
+        // LOG_F(INFO, "Camera speed DOWN");
+        if (speed > 1) 
+            speed -= 1;
+    }
 }
 
 void entity::player::Player::processMouseMotion()
