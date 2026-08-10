@@ -1,11 +1,16 @@
 #include <glm/ext.hpp>
 
 #include "camera.h"
+#include "CameraManager.h"
 #include "config.h"
 
 
 Camera::Camera(vec3 position, float fov): position(position), fov(fov), rotation(1.0f){
     updateVectors();
+    CameraManager::instance().registerCamera(this);
+}
+Camera::~Camera() {
+    CameraManager::instance().unregisterCamera(this);
 };
 
 void Camera::updateVectors(){

@@ -9,12 +9,13 @@
 #include "window/window.h"
 #include "window/events.h"
 #include "world/world.h"
+#include "world/WorldManager.h"
 #include "ui/gui.h"
 
 int main(int argc, char *argv[]) {
 
   loguru::init(argc, argv);
-  loguru::add_file("logs/debug.log", loguru::Append, loguru::Verbosity_MAX);
+  loguru::add_file("logs/debug.log", loguru::Truncate, loguru::Verbosity_MAX);
   loguru::add_file("logs/info.log", loguru::Truncate, loguru::Verbosity_INFO);
   loguru::add_file("logs/error.log", loguru::Truncate, loguru::Verbosity_ERROR);
 
@@ -24,23 +25,36 @@ int main(int argc, char *argv[]) {
   Events events(Window::window);
   imgui gui(Window::window);
 
-  World* world = new World();
-
+  auto& worldManager = WorldManager::instance();
+  worldManager.createWorld<World>();
+  
   glClearColor(0.6f,0.62f,0.65f,1);
   glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   
+  LOG_F(INFO, "Starting world draw cycle");
+  float lastTime = glfwGetTime();
   while (!window.isShouldClose()) {
+    float currentTime = glfwGetTime();
+    float delta = currentTime - lastTime;
+    lastTime = currentTime;
+
     window.render();
     
-    world->draw();
+    World* world = worldManager.getActiveWorld();
+    if (world)
+    {
+      world->update(delta);
+      world->draw();
+    }
 
     gui.loop();
     window.swapBuffers();
     events.pullEvents();
   }
-
+  LOG_F(INFO, "Detected app closing");
+  worldManager.gracefulShutdown();
   return 0;
 }

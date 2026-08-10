@@ -11,7 +11,7 @@
 Chunk::Chunk(int xpos, int ypos, int zpos) : x(xpos), y(ypos), z(zpos)
 {
 	for (unsigned int i = 0; i < CHUNK_BLOCKS; i++)
-		blocksIds[i] = 1;
+		blocksIds[i] = 0;
 }
 
 Chunk::~Chunk()
