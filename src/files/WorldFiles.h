@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <cstdint>
 #include <filesystem>
+#include <fstream>
+#include <mutex>
 
 /**
  * Структура для координат региона (3D)
@@ -63,6 +65,8 @@ public:
     void write();
 
 private:
+    std::unordered_map<RegionCoords, std::ifstream> m_openFiles;
+    std::mutex m_fileMutex;   // для безопасного доступа к m_openFiles
     std::string directory;
     char* mainBuffer;  // Буфер для компрессии/декомпрессии
 

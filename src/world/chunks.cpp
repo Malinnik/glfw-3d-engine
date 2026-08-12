@@ -65,6 +65,15 @@ Chunk* Chunks::getChunk(int x, int y, int z){
 	return chunks[(y * d + z) * w + x];
 }
 
+int Chunks::getChunkIndex(int x, int y, int z)
+{
+	int cx = x - ox;
+	int cy = y - oy;
+	int cz = z - oz;
+	if (cx < 0 || cy < 0 || cz < 0 || cx >= w || cy >= h || cz >= d) return -1;
+    return (cy * d + cz) * w + cx;
+}
+
 Chunk* Chunks::getChunkByBlock(int x, int y, int z)
 {
     x -= ox * CHUNK_W;
@@ -237,6 +246,9 @@ void Chunks::translate(int dx, int dy, int dz)
 					continue;
 				Mesh* mesh = meshes[(y * d + z) * w + x];
 				if (nx < 0 || ny < 0 || nz < 0 || nx >= w || ny >= h || nz >= d){
+					if (worldFiles) {
+						worldFiles->put((const char*)chunk->blocksIds, chunk->x, chunk->y, chunk->z);
+					}
 					delete chunk;
 					delete mesh;
 					continue;
@@ -261,54 +273,66 @@ void Chunks::translate(int dx, int dy, int dz)
 
 bool Chunks::loadVisible(WorldFiles *worldFiles)
 {
-	int nearX = 0;
-	int nearY = 0;
-	int nearZ = 0;
-	int minDistance = 1000000000;
-	float centerX = (w - 1) * 0.5f;
-	float centerY = (h - 1) * 0.5f;
-	float centerZ = (d - 1) * 0.5f;
-	for (unsigned int y = 0; y < h; y++){
-		for (unsigned int z = 0; z < d; z++){
-			for (unsigned int x = 0; x < w; x++){
-				int index = (y * d + z) * w + x;
-				Chunk* chunk = chunks[index];
-				if (chunk != nullptr)
-					continue;
-				float lx = x - centerX;
-				float ly = y - centerY;
-				float lz = z - centerZ;
-				int distance = (int)(lx * lx + ly * ly + lz * lz);
-				if (distance < minDistance){
-					minDistance = distance;
-					nearX = x;
-					nearY = y;
-					nearZ = z;
-				}
-			}
-		}
-	}
+    // 1. Собираем все пустые слоты с их квадратом расстояния до центра
+    std::vector<std::pair<int, int>> emptySlots; // pair(расстояние^2, индекс)
+    float centerX = (w - 1) * 0.5f;
+    float centerY = (h - 1) * 0.5f;
+    float centerZ = (d - 1) * 0.5f;
 
-	int index = (nearY * d + nearZ) * w + nearX;
-	Chunk* chunk = chunks[index];
-	if (chunk != nullptr)
-		return false;
-	
-	chunk = new Chunk(nearX+ox,nearY+oy,nearZ+oz);
-	if (!worldFiles->getChunk(chunk->x, chunk->y, chunk->z, (char*)chunk->blocksIds))
-		WorldGenerator::generate(chunk->blocksIds, chunk->x, chunk->y, chunk->z);
+    for (unsigned int y = 0; y < h; y++) {
+        for (unsigned int z = 0; z < d; z++) {
+            for (unsigned int x = 0; x < w; x++) {
+                int index = (y * d + z) * w + x;
+                if (chunks[index] != nullptr) continue;
 
-	chunks[index] = chunk;
-	chunk->modified = true;
-	// Mark adjacent chunks as modified so their meshes update
-	if (Chunk* adj = getChunk(nearX+ox-1, nearY+oy, nearZ+oz)) adj->modified = true;
-	if (Chunk* adj = getChunk(nearX+ox+1, nearY+oy, nearZ+oz)) adj->modified = true;
-	if (Chunk* adj = getChunk(nearX+ox, nearY+oy-1, nearZ+oz)) adj->modified = true;
-	if (Chunk* adj = getChunk(nearX+ox, nearY+oy+1, nearZ+oz)) adj->modified = true;
-	if (Chunk* adj = getChunk(nearX+ox, nearY+oy, nearZ+oz-1)) adj->modified = true;
-	if (Chunk* adj = getChunk(nearX+ox, nearY+oy, nearZ+oz+1)) adj->modified = true;
-	// Lighting::onChunkLoaded(ox+nearX, oy+nearY, oz+nearZ);
-	return true;
+                float lx = x - centerX;
+                float ly = y - centerY;
+                float lz = z - centerZ;
+                int distanceSq = (int)(lx * lx + ly * ly + lz * lz);
+                emptySlots.emplace_back(distanceSq, index);
+            }
+        }
+    }
+
+    if (emptySlots.empty())
+        return false;
+
+    // 2. Сортируем по возрастанию расстояния (ближайшие первыми)
+    std::sort(emptySlots.begin(), emptySlots.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+
+    // 3. Загружаем до MAX_LOADS_PER_FRAME чанков
+    const int MAX_LOADS_PER_FRAME = 3;
+    int loaded = 0;
+    for (const auto& [dist, idx] : emptySlots) {
+        if (loaded >= MAX_LOADS_PER_FRAME)
+            break;
+
+        if (chunks[idx] != nullptr)
+            continue; // на всякий случай повторная проверка
+
+        // Локальные координаты слота
+        int nx = idx % w;
+        int nz = (idx / w) % d;
+        int ny = idx / (w * d);
+
+        // Мировые координаты чанка
+        int chunkX = nx + ox;
+        int chunkY = ny + oy;
+        int chunkZ = nz + oz;
+
+        // Создаём пустой чанк и сразу занимаем слот
+        Chunk* chunk = new Chunk(chunkX, chunkY, chunkZ);
+        chunks[idx] = chunk;
+
+        // Отправляем запрос на генерацию/загрузку
+        if (generator) {
+            generator->requestChunk(chunkX, chunkY, chunkZ);
+        }
+        loaded++;
+    }
+
+    return loaded > 0;
 }
 
 bool Chunks::_buildMeshes(BlockRenderer* renderer) {
@@ -364,4 +388,35 @@ bool Chunks::_buildMeshes(BlockRenderer* renderer) {
 		}
 	}
 	return builtAny;
+}
+
+void Chunks::update()
+{
+	if (!generator) return;
+
+    std::vector<ChunkResult> results;
+    generator->fetchReadyChunks(results);  // забираем всё накопившееся
+
+    for (auto& result : results) {
+        int x = result.task.x;
+        int y = result.task.y;
+        int z = result.task.z;
+
+        // Ищем индекс чанка по мировым координатам
+        int idx = getChunkIndex(x, y, z);   // метод, который переводит мировые координаты чанка в индекс массива
+        if (idx == -1 || chunks[idx] == nullptr)
+            continue;   // чанк мог быть уже выгружен (например, при перемещении мира)
+
+        // Копируем сгенерированные блоки в наш чанк-заглушку
+        memcpy(chunks[idx]->blocksIds, result.blocks, sizeof(result.blocks));
+        chunks[idx]->modified = true;
+
+        // Теперь помечаем соседние чанки (если они существуют), чтобы обновились стыки
+        if (Chunk* adj = getChunk(x-1, y, z)) adj->modified = true;
+        if (Chunk* adj = getChunk(x+1, y, z)) adj->modified = true;
+        if (Chunk* adj = getChunk(x, y-1, z)) adj->modified = true;
+        if (Chunk* adj = getChunk(x, y+1, z)) adj->modified = true;
+        if (Chunk* adj = getChunk(x, y, z-1)) adj->modified = true;
+        if (Chunk* adj = getChunk(x, y, z+1)) adj->modified = true;
+    }
 }

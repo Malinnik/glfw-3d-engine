@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <functional>
 #include <map>
+#include <memory>
+#include <vector>
 
 
 #include "config.h"
@@ -18,30 +20,49 @@
 #include "blocks/blocks.h"
 
 namespace entity {
+    
+    class Entity{
+            public:
+                Transform transform;
 
+                Entity() = default;
+                virtual ~Entity() = default;
 
-    class IControllable{
+                virtual void onUpdate(float delta) {}
+                virtual void onRender() {}
+        };
+
+    class IControlProvider {
         public:
-            virtual ~IControllable() = default;
+            virtual ~IControlProvider() = default;
             virtual void processMovement(float delta) = 0;
             virtual void processMouseMotion() = 0;
-        
+            virtual void processBlockInteraction() = 0;
     };
 
-    class Entity{
+    class IControllable {
         public:
-            Transform transform;
-
-            Entity() = default;
-            virtual ~Entity() = default;
-
-            virtual void onUpdate(float delta) {}
-            virtual void onRender() {}
+            void handleControl(float delta) {
+                if (m_controller)
+                {
+                    m_controller->processMovement(delta);
+                    m_controller->processMouseMotion();
+                    m_controller->processBlockInteraction();
+                }
+            }
+            void setController(std::unique_ptr<IControlProvider> controller) { 
+                m_controller = std::move(controller); 
+            }
+     
+        protected:
+            std::unique_ptr<IControlProvider> m_controller;
     };
-
+    
     class PhysicsComponent {
         public:
             PhysicsComponent();
+
+            bool gravityEnabled = true;
 
             void update(float delta, Entity& owner);
 
@@ -63,9 +84,35 @@ namespace entity {
             float m_height = 1.8f;
             BlockQueryFunc m_blockQuery;
 
+        };
+        
+    class SurvivalController : public IControlProvider {
+        public:
+            explicit SurvivalController(class PhysicsComponent* physicsComponent, class Camera* camera, glm::ivec3* targetBlock, bool* hasTarget);
+            void processMovement(float delta) override;
+            void processMouseMotion() override;
+            void processBlockInteraction() override;
+        private:
+            PhysicsComponent* physics;
+            Camera* camera;
+            glm::ivec3* targetBlock;
+            bool* hasTarget;
     };
 
-
+    class CreativeController : public IControlProvider {
+        public:
+            explicit CreativeController(class PhysicsComponent* physicsComponent, class Camera* camera, glm::ivec3* targetBlock, bool* hasTarget, float* speed);
+            void processMovement(float delta) override;
+            void processMouseMotion() override;
+            void processBlockInteraction() override;
+        private:
+            PhysicsComponent* physics;
+            Camera* camera;
+            glm::ivec3* targetBlock;
+            bool* hasTarget;
+            float* speed;
+    };
+    
     namespace player {
 
         class Player : public Entity, public IControllable {
@@ -78,13 +125,8 @@ namespace entity {
 
                 void onUpdate(float delta) override;
                 void onRender() override;
-                
 
             private:
-                void processMovement(float delta) override;
-                void processMouseMotion() override;
-                void processBlockInteraction();
-
                 PhysicsComponent physics;
 
                 Camera* camera = nullptr;
@@ -96,9 +138,6 @@ namespace entity {
 
                 float eyeHeight = 1.62f;
                 float speed = 2.0f;
-                
-                
-
         };
             
     }

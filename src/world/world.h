@@ -12,6 +12,7 @@
 #include "blocks/blocks.h"
 #include "graphics/atlas.h"
 #include "world/generation.h"
+#include "world/ChunkGenerator.h"
 #include "files/WorldFiles.h"
 
 
@@ -31,6 +32,7 @@ class World{
         void draw();
         void save();
         void reRenderChunks();
+        void shutdownGenerator();
 
         Chunks* getChunks() { return chunks.get(); }
         entity::player::Player* getPlayer() { return player.get(); }
@@ -39,5 +41,6 @@ class World{
     
     private:
         std::unique_ptr<Chunks> chunks;
+        std::unique_ptr<ChunkGenerator> chunkGenerator;
         std::unique_ptr<entity::player::Player> player;
 };

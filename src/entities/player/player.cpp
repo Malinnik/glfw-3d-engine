@@ -1,6 +1,7 @@
 #include "player.h"
 #include "world/WorldManager.h"
 #include "blocks/block.h"
+#include "loguru.hpp"
 
 entity::player::Player::Player()
 {
@@ -46,6 +47,9 @@ entity::player::Player::Player(Transform transform)
     blockSelector = new BlockSelector();
     crosshair = new Crosshair();
 
+    setController(std::make_unique<SurvivalController>(&physics, camera, &targetBlock, &hasTarget));
+
+
     // World* world = WorldManager::instance().getActiveWorld();
     // if (world)
     //     physics.gravity = world->Gravity;
@@ -86,14 +90,15 @@ entity::player::Player::~Player()
 
 void entity::player::Player::onUpdate(float delta)
 {
-    processMovement(delta);
-    processMouseMotion();
-    processBlockInteraction();
-
+    handleControl(delta);
     physics.update(delta, *this);
-
     // TODO: make childs position auto depends on parent
     camera->position = transform.position + glm::vec3(0, eyeHeight, 0);
+
+    if (Events::jPressed(GLFW_KEY_F1))
+        setController(std::make_unique<SurvivalController>(&physics, camera, &targetBlock, &hasTarget));
+    if (Events::jPressed(GLFW_KEY_F2))
+        setController(std::make_unique<CreativeController>(&physics, camera, &targetBlock, &hasTarget, &speed));
 }
 
 void entity::player::Player::onRender()
@@ -103,114 +108,6 @@ void entity::player::Player::onRender()
         blockSelector->draw(targetBlock.x, targetBlock.y, targetBlock.z);
 }
 
-void entity::player::Player::processMovement(float delta)
-{
-    // TODO: Move acceleration to other class staff
-    float acceleration = (physics.onGround ? 50 : 5);
-    glm::vec3 moveDir(0.0f);
-
-    if (Events::jPressed(GLFW_KEY_TAB))
-        Events::toggleCursor();
-
-    if (Events::pressed(GLFW_KEY_W))
-        moveDir += camera->front;
-    if (Events::pressed(GLFW_KEY_S))
-        moveDir -= camera->front;
-    if (Events::pressed(GLFW_KEY_D))
-        moveDir += camera->right;
-    if (Events::pressed(GLFW_KEY_A))
-        moveDir -= camera->right;
-
-    if (glm::length(moveDir) > 0.0f)
-    {
-        moveDir = glm::normalize(moveDir);
-        moveDir.y = 0.0f;
-        physics.velocity += moveDir * acceleration * delta;
-    }
-    else 
-    {
-        physics.velocity.x *= (1.0f - 10.0f * delta);
-        physics.velocity.z *= (1.0f - 10.0f * delta);
-    }
-
-    float maxSpeed = 4.0f;
-    glm::vec2 horiz(physics.velocity.x, physics.velocity.z);
-    if (glm::length(horiz) > maxSpeed)
-     {
-        horiz = glm::normalize(horiz) * maxSpeed;
-        physics.velocity.x = horiz.x;
-        physics.velocity.z = horiz.y;
-    }
-
-    if (physics.onGround && Events::pressed(GLFW_KEY_SPACE))
-    {
-        physics.velocity.y = physics.jumpStrength;
-        physics.onGround = false;
-        // transform.position += camera->up;
-
-    }
-    // if (Events::pressed(GLFW_KEY_LEFT_SHIFT))
-    //     transform.position -= camera->up;
-
-
-    if (Events::scroll_up){
-        // LOG_F(INFO, "Camera speed UP");
-        if (speed >= 0)
-            speed += 1;
-    }
-    if (Events::scroll_down){
-        // LOG_F(INFO, "Camera speed DOWN");
-        if (speed > 1) 
-            speed -= 1;
-    }
-}
-
-void entity::player::Player::processMouseMotion()
-{
-    // Поворот только если курсор захвачен
-    if (Events::cursor_locked){
-        camera->camY += -Events::deltaY / HEIGHT * 2;
-        camera->camX += -Events::deltaX / HEIGHT * 2;
-
-        if (camera->camY < -radians(89.0f))
-            camera->camY = -radians(89.0f);
-        if (camera->camY > radians(89.0f))
-            camera->camY = radians(89.0f);
-
-        camera->rotation = mat4(1.0f);
-        camera->rotate(camera->camY, camera->camX, 0);
-    }
-}
-
-void entity::player::Player::processBlockInteraction()
-{
-    World* world = WorldManager::instance().getActiveWorld();
-    if (!world) return;
-    Chunks* chunks = world->getChunks();
-
-    vec3 end;
-    vec3 norm;
-    vec3 iend;
-    
-    blocks::Block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
-    if (blk != nullptr)
-    {
-        targetBlock = glm::ivec3(iend.x, iend.y, iend.z);
-        hasTarget = true;
-        // blockSelector->draw(iend.x, iend.y, iend.z);
-
-        if (Events::jClicked(GLFW_MOUSE_BUTTON_1)){
-            chunks->set((int)iend.x, (int)iend.y, (int)iend.z, 0);
-        }
-        if (Events::jClicked(GLFW_MOUSE_BUTTON_2)){
-            chunks->set((int)(iend.x)+(int)(norm.x), (int)(iend.y)+(int)(norm.y), (int)(iend.z)+(int)(norm.z), 2);
-        }
-    }
-    else 
-    {
-        hasTarget = false;
-    }
-}
 
 entity::PhysicsComponent::PhysicsComponent() {}
 
@@ -218,7 +115,8 @@ void entity::PhysicsComponent::update(float delta, Entity &owner)
 {
     if (!m_blockQuery) return;
 
-    velocity.y -= gravity * delta;
+    if (gravityEnabled)
+        velocity.y -= gravity * delta;
 
     moveAxis(velocity.x * delta, 0, owner);
     moveAxis(velocity.y * delta, 1, owner);
@@ -286,4 +184,219 @@ void entity::PhysicsComponent::moveAxis(float amount, int axis, Entity &owner)
 
     if (axis == 0) velocity.x = 0.0f;
     if (axis == 2) velocity.z = 0.0f;
+}
+
+entity::SurvivalController::SurvivalController(class PhysicsComponent* physicsComponent, class Camera* camera, glm::ivec3* targetBlock, bool* hasTarget) : physics(physicsComponent), camera(camera), targetBlock(targetBlock), hasTarget(hasTarget)
+{
+    if (physics)
+        physics->gravityEnabled = true;
+}
+
+void entity::SurvivalController::processMovement(float delta)
+{
+    if (!camera) return;
+    if (!physics) return;
+
+    // TODO: Move acceleration to other class staff
+    float acceleration = (physics->onGround ? 50 : 5);
+    glm::vec3 moveDir(0.0f);
+
+    if (Events::jPressed(GLFW_KEY_TAB))
+        Events::toggleCursor();
+
+    if (Events::pressed(GLFW_KEY_W))
+        moveDir += camera->front;
+    if (Events::pressed(GLFW_KEY_S))
+        moveDir -= camera->front;
+    if (Events::pressed(GLFW_KEY_D))
+        moveDir += camera->right;
+    if (Events::pressed(GLFW_KEY_A))
+        moveDir -= camera->right;
+
+    if (glm::length(moveDir) > 0.0f)
+    {
+        moveDir = glm::normalize(moveDir);
+        moveDir.y = 0.0f;
+        physics->velocity += moveDir * acceleration * delta;
+    }
+    else 
+    {
+        physics->velocity.x *= (1.0f - 10.0f * delta);
+        physics->velocity.z *= (1.0f - 10.0f * delta);
+    }
+
+    float maxSpeed = 4.0f;
+    glm::vec2 horiz(physics->velocity.x, physics->velocity.z);
+    if (glm::length(horiz) > maxSpeed)
+     {
+        horiz = glm::normalize(horiz) * maxSpeed;
+        physics->velocity.x = horiz.x;
+        physics->velocity.z = horiz.y;
+    }
+
+    if (physics->onGround && Events::pressed(GLFW_KEY_SPACE))
+    {
+        physics->velocity.y = physics->jumpStrength;
+        physics->onGround = false;
+
+    }
+}
+
+void entity::SurvivalController::processMouseMotion()
+{
+    if (!camera)
+        return;
+
+    if (Events::cursor_locked) {
+        camera->camY += -Events::deltaY / HEIGHT * 2;
+        camera->camX += -Events::deltaX / HEIGHT * 2;
+
+        if (camera->camY < -radians(89.0f))
+            camera->camY = -radians(89.0f);
+        if (camera->camY > radians(89.0f))
+            camera->camY = radians(89.0f);
+
+        camera->rotation = mat4(1.0f);
+        camera->rotate(camera->camY, camera->camX, 0);
+    }
+}
+
+void entity::SurvivalController::processBlockInteraction()
+{
+    World* world = WorldManager::instance().getActiveWorld();
+    if (!world) return;
+    Chunks* chunks = world->getChunks();
+    if (!chunks) return;
+
+    vec3 end;
+    vec3 norm;
+    vec3 iend;
+    
+    blocks::Block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
+    if (blk != nullptr)
+    {
+        *targetBlock = glm::ivec3(iend.x, iend.y, iend.z);
+        *hasTarget = true;
+        // blockSelector->draw(iend.x, iend.y, iend.z);
+
+        if (Events::jClicked(GLFW_MOUSE_BUTTON_1)){
+            chunks->set((int)iend.x, (int)iend.y, (int)iend.z, 0);
+        }
+        if (Events::jClicked(GLFW_MOUSE_BUTTON_2)){
+            chunks->set((int)(iend.x)+(int)(norm.x), (int)(iend.y)+(int)(norm.y), (int)(iend.z)+(int)(norm.z), 2);
+        }
+    }
+    else 
+    {
+        *hasTarget = false;
+    }
+}
+
+entity::CreativeController::CreativeController(class PhysicsComponent* physicsComponent, class Camera* camera, glm::ivec3* targetBlock, bool* hasTarget, float* speed) : physics(physicsComponent), camera(camera), targetBlock(targetBlock), hasTarget(hasTarget), speed(speed)
+{
+    physics->gravityEnabled = false;
+}
+
+void entity::CreativeController::processMovement(float delta)
+{
+    if (Events::jPressed(GLFW_KEY_TAB))
+        Events::toggleCursor();
+
+    if (Events::doublePressed(GLFW_KEY_SPACE)) {
+        physics->gravityEnabled = !physics->gravityEnabled;
+        physics->velocity.y = 0.0f;
+    }
+
+    glm::vec3 moveDir(0.0f);
+
+    // Горизонтальное движение
+    if (Events::pressed(GLFW_KEY_W)) moveDir += camera->front;
+    if (Events::pressed(GLFW_KEY_S)) moveDir -= camera->front;
+    if (Events::pressed(GLFW_KEY_D)) moveDir += camera->right;
+    if (Events::pressed(GLFW_KEY_A)) moveDir -= camera->right;
+
+    // Вертикальное движение только при включённом полёте
+    if (!physics->gravityEnabled) {
+        if (Events::pressed(GLFW_KEY_SPACE)) moveDir.y += 1.0f;
+        if (Events::pressed(GLFW_KEY_LEFT_SHIFT)) moveDir.y -= 1.0f;
+    } else {
+        // При гравитации пробел = прыжок (как в выживании)
+        if (physics->onGround && Events::pressed(GLFW_KEY_SPACE)) {
+            physics->velocity.y = physics->jumpStrength;
+            physics->onGround = false;
+        }
+    }
+
+    // Регулировка скорости колёсиком
+    if (Events::scroll_up) {
+        *speed += 1.0f;
+        Events::scroll_up = false;
+    }
+    if (Events::scroll_down) {
+        *speed = std::max(1.0f, *speed - 1.0f);
+        Events::scroll_down = false;
+    }
+
+    glm::vec3 desiredVelocity(0.0f);
+    if (glm::length(moveDir) > 0.0f) {
+        moveDir = glm::normalize(moveDir);
+        desiredVelocity = moveDir * (*speed);
+    }
+
+    if (physics->gravityEnabled) {
+        // Если гравитация включена, управляем только горизонтальными компонентами,
+        // вертикальная скорость пусть меняется физикой (гравитацией и прыжками).
+        physics->velocity.x = desiredVelocity.x;
+        physics->velocity.z = desiredVelocity.z;
+    } else {
+        // Полёт: полный контроль скорости, включая вертикальную.
+        physics->velocity = desiredVelocity;
+    }
+
+}
+
+void entity::CreativeController::processMouseMotion()
+{
+    if (Events::cursor_locked) {
+        camera->camY += -Events::deltaY / HEIGHT * 2;
+        camera->camX += -Events::deltaX / HEIGHT * 2;
+
+        if (camera->camY < -radians(89.0f))
+            camera->camY = -radians(89.0f);
+        if (camera->camY > radians(89.0f))
+            camera->camY = radians(89.0f);
+
+        camera->rotation = mat4(1.0f);
+        camera->rotate(camera->camY, camera->camX, 0);
+    }
+}
+
+void entity::CreativeController::processBlockInteraction()
+{
+    World* world = WorldManager::instance().getActiveWorld();
+    if (!world) return;
+    Chunks* chunks = world->getChunks();
+
+    vec3 end;
+    vec3 norm;
+    vec3 iend;
+    
+    blocks::Block* blk = chunks->rayCast(camera->position, camera->front, 10.0f, end, norm, iend);
+    if (blk != nullptr)
+    {
+        *targetBlock = glm::ivec3(iend.x, iend.y, iend.z);
+        *hasTarget = true;
+        // blockSelector->draw(iend.x, iend.y, iend.z);
+
+        if (Events::jClicked(GLFW_MOUSE_BUTTON_1)){
+            chunks->set((int)iend.x, (int)iend.y, (int)iend.z, 0);
+        }
+        if (Events::jClicked(GLFW_MOUSE_BUTTON_2)){
+            chunks->set((int)(iend.x)+(int)(norm.x), (int)(iend.y)+(int)(norm.y), (int)(iend.z)+(int)(norm.z), 2);
+        }
+    }
+    else 
+    {
+        *hasTarget = false;
+    }
 }

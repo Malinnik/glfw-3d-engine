@@ -9,6 +9,7 @@ class Events {
     public:
         static bool* keys;
         static uint* frames;
+        static uint* lastPressedFrame;
         static uint current;
         static float deltaX;
         static float deltaY;
@@ -21,13 +22,17 @@ class Events {
         
         void pullEvents();
         Events(GLFWwindow *window);
-        // ~Events();
+        ~Events();
 
         static bool pressed(int keyCode);
         static bool jPressed(int keyCode);
+        static bool doublePressed(int keyCode, uint maxInterval = 20);
 
         static bool clicked(int button);
         static bool jClicked(int button);
+        static bool doubleClicked(int keyCode, uint maxInterval = 20);
 
         static void toggleCursor();
+    
+    private:
 };

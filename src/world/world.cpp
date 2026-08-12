@@ -17,6 +17,9 @@ World::World()
 
     player = std::make_unique<entity::player::Player>(Transform(0, playerY, 0));
     chunks = std::make_unique<Chunks>(16*2,8,16*2, 0,0,0);
+    chunkGenerator = std::make_unique<ChunkGenerator>(&worldFiles);
+    chunks->setWorldFiles(&worldFiles);
+    chunks->setGenerator(chunkGenerator.get());
 
     CameraManager::instance().pushCamera(player->getCamera());
     // CameraManager::instance().pushCamera(player.get)
@@ -33,12 +36,15 @@ void World::update(float delta)
 {
     if (player)
         player->onUpdate(delta);
+
+    chunks->update();
 }
 
 void World::draw()
 {
     Camera* camera = CameraManager::instance().getActiveCamera();
     if (!camera) return;
+    camera->updateFrustum();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -62,6 +68,14 @@ void World::draw()
         Mesh* mesh = chunks->meshes[i];
         if (mesh == nullptr)
             continue;
+
+        //Отсечение невидимых чанков
+        glm::vec3 chunkMin = glm::vec3(chunk->x * CHUNK_W, chunk->y * CHUNK_H, chunk->z * CHUNK_D);
+        glm::vec3 chunkMax = chunkMin + glm::vec3(CHUNK_W, CHUNK_H, CHUNK_D);
+        if (!camera->frustum.isAABBVisible(chunkMin, chunkMax)) {
+            continue;
+        }
+
         model = glm::translate(mat4(1.0f), vec3(chunk->x*CHUNK_W+0.5f, chunk->y*CHUNK_H+0.5f, chunk->z*CHUNK_D+0.5f));
         shader->uniformMatrix("model", model);
         mesh->draw(GL_TRIANGLES);
@@ -112,5 +126,13 @@ void World::reRenderChunks(){
         }
         Mesh* mesh = blockRenderer.render(chunk, (const Chunk**)closes);
         chunks->meshes[i] = mesh;
+    }
+}
+
+void World::shutdownGenerator()
+{
+    if (chunks) {
+        ChunkGenerator* gen = chunks->getGenerator();
+        if (gen) gen->shutdown();
     }
 }

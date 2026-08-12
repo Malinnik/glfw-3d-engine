@@ -1,8 +1,11 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <vector>
+
 #include "blocks/block.h"
 #include "graphics/BlockRenderer.h"
+#include "world/ChunkGenerator.h"
 #include "files/WorldFiles.h"
 
 using namespace glm;
@@ -17,6 +20,10 @@ class Chunks {
         Mesh **meshesSecond;
         size_t volume;
 
+        ChunkGenerator* generator = nullptr;
+        std::vector<ChunkResult> pendingChunks;
+        WorldFiles* worldFiles = nullptr;
+
         unsigned int w,h,d;
         int ox, oy, oz;
 
@@ -24,6 +31,7 @@ class Chunks {
         ~Chunks();
 
         Chunk* getChunk(int x, int y, int z);
+        int getChunkIndex(int x, int y, int z);
         Chunk* getChunkByBlock(int x, int y, int z);
 
         blocks::Block* get(int x, int y, int z);
@@ -36,4 +44,10 @@ class Chunks {
 
         bool loadVisible(WorldFiles *worldFiles);
         bool _buildMeshes(BlockRenderer *renderer);
+
+        void setGenerator(ChunkGenerator* generator) {this->generator = generator;}
+        ChunkGenerator* getGenerator() const { return generator; }
+
+        void setWorldFiles(WorldFiles* worldFiles) {this->worldFiles = worldFiles;}
+        void update();
 };
