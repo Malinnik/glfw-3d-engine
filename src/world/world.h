@@ -32,6 +32,7 @@ class World{
         void draw();
         void save();
         void reRenderChunks();
+        void shutdownGenerator();
 
         Chunks* getChunks() { return chunks.get(); }
         entity::player::Player* getPlayer() { return player.get(); }

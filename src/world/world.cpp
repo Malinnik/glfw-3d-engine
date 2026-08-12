@@ -128,3 +128,11 @@ void World::reRenderChunks(){
         chunks->meshes[i] = mesh;
     }
 }
+
+void World::shutdownGenerator()
+{
+    if (chunks) {
+        ChunkGenerator* gen = chunks->getGenerator();
+        if (gen) gen->shutdown();
+    }
+}

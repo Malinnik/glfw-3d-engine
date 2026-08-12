@@ -4,7 +4,7 @@
 #include "fmt/format.h"
 #include "world/generation.h"
 
-ChunkGenerator::ChunkGenerator(WorldFiles* worldFiles)
+ChunkGenerator::ChunkGenerator(WorldFiles* worldFiles) : m_worldFiles(worldFiles)
 {
     m_thread = std::thread(&ChunkGenerator::workerLoop, this);
 }

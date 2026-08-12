@@ -46,6 +46,8 @@ class Chunks {
         bool _buildMeshes(BlockRenderer *renderer);
 
         void setGenerator(ChunkGenerator* generator) {this->generator = generator;}
+        ChunkGenerator* getGenerator() const { return generator; }
+
         void setWorldFiles(WorldFiles* worldFiles) {this->worldFiles = worldFiles;}
         void update();
 };

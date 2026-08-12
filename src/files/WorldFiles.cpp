@@ -186,67 +186,76 @@ bool WorldFiles::getChunk(int x, int y, int z, char* out) {
 }
 
 bool WorldFiles::readChunk(int x, int y, int z, char* out) {
-    assert(out != nullptr);
-
-    int regX, regY, regZ;
-    int locX, locY, locZ;
-
+    int regX, regY, regZ, locX, locY, locZ;
     coordsToRegion(regX, regY, regZ, x, y, z);
     coordsToLocal(locX, locY, locZ, x, y, z, regX, regY, regZ);
-
+    RegionCoords regionKey(regX, regY, regZ);
     int chunkIndex = getChunkIndex(locX, locY, locZ);
-    std::string filename = getRegionFile(regX, regY, regZ);
 
-    std::ifstream input(filename, std::ios::binary);
-    if (!input.is_open()) {
-        return false;
+    // Получаем открытый файл региона (или открываем новый)
+    std::ifstream* stream = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(m_fileMutex);
+        auto it = m_openFiles.find(regionKey);
+        if (it == m_openFiles.end()) {
+            std::string filename = getRegionFile(regX, regY, regZ);
+            auto newStream = std::make_unique<std::ifstream>(filename, std::ios::binary);
+            if (!newStream->is_open()) {
+                return false;
+            }
+            auto [iter, _] = m_openFiles.emplace(regionKey, std::move(*newStream));
+            stream = &iter->second;
+        } else {
+            stream = &it->second;
+        }
     }
 
-    // Читать offset из таблицы смещений
+    std::ifstream& input = *stream;
+
+    // Читаем offset из таблицы смещений
     uint32_t offset;
     input.seekg(chunkIndex * 4);
-    input.read((char*)(&offset), 4);
+    input.read(reinterpret_cast<char*>(&offset), 4);
+    if (input.fail()) return false;
 
-    if (input.fail()) {
-        input.close();
-        return false;
-    }
+    offset = bytes2Int(reinterpret_cast<const unsigned char*>(&offset), 0);
+    if (offset == 0) return false;   // чанк отсутствует на диске
 
-    offset = bytes2Int((const unsigned char*)(&offset), 0);
-
-    if (offset == 0) {
-        input.close();
-        return false;
-    }
-
-    // Читать размер и сжатые данные
+    // Переходим к смещению и читаем сжатые данные
     input.seekg(offset);
     uint32_t compressedSize;
-    input.read((char*)(&compressedSize), 4);
+    input.read(reinterpret_cast<char*>(&compressedSize), 4);
+    if (input.fail()) return false;
 
-    if (input.fail()) {
-        input.close();
-        return false;
+    compressedSize = bytes2Int(reinterpret_cast<const unsigned char*>(&compressedSize), 0);
+    if (compressedSize == 0) return false;
+
+    input.read(mainBuffer, compressedSize);
+    if (input.fail()) return false;
+
+    // Распаковываем
+    decompressRLE(mainBuffer, compressedSize, out, CHUNK_DATA_SIZE);
+
+    // Сохраняем чанк в памяти, чтобы следующий запрос не обращался к диску
+    char** region = regions[regionKey];
+    if (region == nullptr) {
+        region = new char*[REGION_VOL];
+        for (unsigned int i = 0; i < REGION_VOL; i++) region[i] = nullptr;
+        regions[regionKey] = region;
     }
+    char* chunkCopy = new char[CHUNK_DATA_SIZE];
+    memcpy(chunkCopy, out, CHUNK_DATA_SIZE);
+    region[chunkIndex] = chunkCopy;
 
-    compressedSize = bytes2Int((const unsigned char*)(&compressedSize), 0);
-
-    if (compressedSize > 0) {
-        input.read(mainBuffer, compressedSize);
-        if (input.fail()) {
-            input.close();
-            LOG_F(ERROR, "Failed to read compressed data for chunk (%d,%d,%d), size=%u",
-                  x, y, z, compressedSize);
-            return false;
-        }
-        decompressRLE(mainBuffer, compressedSize, out, CHUNK_DATA_SIZE);
-    }
-
-    input.close();
     return true;
 }
 
 void WorldFiles::write() {
+    // Закрываем все открытые на чтение файлы, чтобы их можно было перезаписать
+    {
+        std::lock_guard<std::mutex> lock(m_fileMutex);
+        m_openFiles.clear();
+    }
     try {
         std::filesystem::create_directories(directory);
     } catch (const std::exception& e) {

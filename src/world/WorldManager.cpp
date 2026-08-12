@@ -16,6 +16,7 @@ void WorldManager::clearWorlds()
 void WorldManager::gracefulShutdown()
 {
     for (auto& world : m_worlds) {
+        world->shutdownGenerator();
         world->save();
     }
     clearWorlds();
