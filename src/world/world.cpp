@@ -17,6 +17,9 @@ World::World()
 
     player = std::make_unique<entity::player::Player>(Transform(0, playerY, 0));
     chunks = std::make_unique<Chunks>(16*2,8,16*2, 0,0,0);
+    chunkGenerator = std::make_unique<ChunkGenerator>(&worldFiles);
+    chunks->setWorldFiles(&worldFiles);
+    chunks->setGenerator(chunkGenerator.get());
 
     CameraManager::instance().pushCamera(player->getCamera());
     // CameraManager::instance().pushCamera(player.get)
@@ -33,6 +36,8 @@ void World::update(float delta)
 {
     if (player)
         player->onUpdate(delta);
+
+    chunks->update();
 }
 
 void World::draw()
@@ -121,5 +126,13 @@ void World::reRenderChunks(){
         }
         Mesh* mesh = blockRenderer.render(chunk, (const Chunk**)closes);
         chunks->meshes[i] = mesh;
+    }
+}
+
+void World::shutdownGenerator()
+{
+    if (chunks) {
+        ChunkGenerator* gen = chunks->getGenerator();
+        if (gen) gen->shutdown();
     }
 }
