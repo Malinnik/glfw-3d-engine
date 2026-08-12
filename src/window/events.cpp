@@ -23,6 +23,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     {
         Events::keys[key] = true;
         Events::frames[key] = Events::current;
+        Events::lastPressedFrame[key] = Events::current;
     }
     else if (action == GLFW_RELEASE)
     {
@@ -37,6 +38,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mode)
     {
         Events::keys[MOUSE_BUTTONS+button] = true;
         Events::frames[MOUSE_BUTTONS+button] = Events::current;
+        Events::lastPressedFrame[MOUSE_BUTTONS+button] = Events::current;
     }
     else if (action == GLFW_RELEASE)
     {
@@ -83,9 +85,11 @@ Events::Events(GLFWwindow *window)
 {
     keys = new bool[1032];
     frames = new uint[1032];
+    lastPressedFrame = new uint[1032];
 
     memset(keys, false, 1032*sizeof(bool));
     memset(frames, 0, 1032*sizeof(uint));
+    memset(lastPressedFrame, 0, 1032*sizeof(uint));
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -107,6 +111,17 @@ bool Events::jPressed(int keyCode)
     return keys[keyCode] && frames[keyCode] == current;
 }
 
+bool Events::doublePressed(int keyCode, uint maxInterval)
+{
+    if (keyCode < 0 || keyCode >= MOUSE_BUTTONS)
+        return false;
+    if (!keys[keyCode] || frames[keyCode] != current)
+        return false;
+    uint last = lastPressedFrame[keyCode];
+    if (last == 0) return false;   
+    return (current - last) <= maxInterval;
+}
+
 bool Events::clicked(int button)
 {
     int index = MOUSE_BUTTONS+button;
@@ -117,6 +132,11 @@ bool Events::jClicked(int button)
 {
     int index = MOUSE_BUTTONS+button;
     return keys[index] && frames[index] == current;
+}
+
+bool Events::doubleClicked(int button, uint maxInterval)
+{
+    return doublePressed(MOUSE_BUTTONS + button, maxInterval);
 }
 
 void Events::toggleCursor()

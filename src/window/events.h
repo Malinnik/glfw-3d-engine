@@ -25,9 +25,14 @@ class Events {
 
         static bool pressed(int keyCode);
         static bool jPressed(int keyCode);
+        static bool doublePressed(int keyCode, uint maxInterval = 20);
 
         static bool clicked(int button);
         static bool jClicked(int button);
+        static bool doubleClicked(int keyCode, uint maxInterval = 20);
 
         static void toggleCursor();
+    
+    private:
+        static uint* lastPressedFrame;
 };
