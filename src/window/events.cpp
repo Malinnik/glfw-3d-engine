@@ -5,6 +5,7 @@
 
 bool* Events::keys;
 uint* Events::frames;
+uint* Events::lastPressedFrame;
 uint Events::current = 0;
 float Events::deltaX = 0.0f;
 float Events::deltaY = 0.0f;
@@ -22,8 +23,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (action == GLFW_PRESS)
     {
         Events::keys[key] = true;
+        Events::lastPressedFrame[key] = Events::frames[key];
         Events::frames[key] = Events::current;
-        Events::lastPressedFrame[key] = Events::current;
     }
     else if (action == GLFW_RELEASE)
     {
@@ -37,8 +38,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mode)
     if (action == GLFW_PRESS)
     {
         Events::keys[MOUSE_BUTTONS+button] = true;
+        Events::lastPressedFrame[MOUSE_BUTTONS+button] = Events::frames[MOUSE_BUTTONS+button];
         Events::frames[MOUSE_BUTTONS+button] = Events::current;
-        Events::lastPressedFrame[MOUSE_BUTTONS+button] = Events::current;
     }
     else if (action == GLFW_RELEASE)
     {
@@ -95,6 +96,13 @@ Events::Events(GLFWwindow *window)
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetScrollCallback(window, mouse_scroll_callback);
+}
+
+Events::~Events()
+{
+    delete[] keys;
+    delete[] frames;
+    delete[] lastPressedFrame;
 }
 
 bool Events::pressed(int keyCode)
